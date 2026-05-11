@@ -2,8 +2,8 @@ import Group from '../models/Group.js'
 
 const isMember = async (req, res, next) => {
   try {
-    const { id } = req.params
-    const group = await Group.findById(id)
+    const groupId = req.params.groupId || req.params.id
+    const group = await Group.findById(groupId)
 
     if (!group) {
       return res.status(404).json({ error: 'Group not found' })
