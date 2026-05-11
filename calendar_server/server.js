@@ -18,7 +18,7 @@ ConnectDB(mdb)
 
 app.use('/api/auth', authRouter)
 app.use('/api/groups', groupRouter)
-app.use('/calendar', calendarTaskRouter)
+app.use('/api/groups', calendarTaskRouter)
 
 app.listen(port, () => {
   console.log(`Server is running on ${host}:${port}`)
