@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import ConnectDB from './config/db.js'
 import calendarTaskRouter from './routes/calendarTask.js'
 import authRouter from './routes/authRoutes.js'
+import groupRouter from './routes/groupRoutes.js'
 import cors from 'cors'
 
 dotenv.config()
@@ -16,6 +17,7 @@ const mdb = process.env.MONGO_URI || 'URL'
 ConnectDB(mdb)
 
 app.use('/api/auth', authRouter)
+app.use('/api/groups', groupRouter)
 app.use('/calendar', calendarTaskRouter)
 
 app.listen(port, () => {
