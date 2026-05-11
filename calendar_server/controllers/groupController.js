@@ -24,6 +24,10 @@ export const createGroup = async (req, res) => {
 
 export const getMyGroups = async (req, res) => {
   try {
+    const userId = req.user.id
+    const groups = await Group.find({ members: userId })
+
+    return res.status(200).json({ groups })
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
