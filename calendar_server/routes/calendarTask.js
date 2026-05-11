@@ -1,4 +1,6 @@
 import { Router } from 'express'
+import authMiddleware from '../middleware/authMiddleware.js'
+import isMember from '../middleware/groupMiddleware.js'
 import {
   createTask,
   getTasks,
@@ -8,12 +10,14 @@ import {
 
 const calendarTaskRouter = Router()
 
-calendarTaskRouter.post('/', createTask)
+calendarTaskRouter.use(authMiddleware)
 
-calendarTaskRouter.get('/', getTasks)
+calendarTaskRouter.get('/:groupId/tasks', isMember, getTasks)
 
-calendarTaskRouter.put('/:id', updateTask)
+calendarTaskRouter.post('/:groupId/tasks', isMember, createTask)
 
-calendarTaskRouter.delete('/:id', deleteTask)
+calendarTaskRouter.put('/:groupId/tasks/:id', isMember, updateTask)
+
+calendarTaskRouter.delete('/:groupId/tasks/:id', isMember, deleteTask)
 
 export default calendarTaskRouter
