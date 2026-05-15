@@ -18,7 +18,7 @@ function Login() {
 
   useEffect(() => {
     if (token) {
-      navigate('/dashboard')
+      navigate('/calendar')
     }
   }, [token, navigate])
 
@@ -30,7 +30,7 @@ function Login() {
     try {
       const data = await authService.login(email, password)
       dispatch(setUser(data))
-      navigate('/dashboard')
+      navigate('/calendar')
     } catch (requestError) {
       dispatch(setError(requestError.response?.data?.error || 'Login failed'))
     }
@@ -45,7 +45,7 @@ function Login() {
         component="form"
         onSubmit={handleSubmit}
         sx={{
-          backgroundColor: '#8fd2db',
+          backgroundColor: '#7897f3',
           display: 'flex',
           flexDirection: 'column',
           p: 3,
