@@ -7,11 +7,13 @@ import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthLayout from './layouts/AuthLayout'
+import PublicLayout from './layouts/PublicLayout'
 import MainLayout from './layouts/MainLayout'
 import Home from './pages/home'
 import Notes from './pages/notes'
 import authService from './services/authService'
 import { restoreAuth } from './features/auth/authSlice'
+import { Box } from '@mui/material'
 
 function App() {
   const dispatch = useDispatch()
@@ -34,20 +36,31 @@ function App() {
   }, [dispatch])
 
   return (
-    <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route element={<AuthLayout />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Home />} />
-      </Route>
-      <Route element={<ProtectedRoute />}>
-        <Route element={<MainLayout />}>
-          <Route path="/calendar" element={<Calendar />} />
-          <Route path="/notes" element={<Notes />} />
+    <Box
+      sx={{
+        minHeight: '100vh',
+        maxWidth: '1440px',
+        width: '100%',
+        mx: 'auto',
+      }}
+    >
+      <Routes>
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route element={<PublicLayout />}>
+          <Route path="/dashboard" element={<Home />} />
         </Route>
-      </Route>
-    </Routes>
+        <Route element={<AuthLayout />}>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route element={<MainLayout />}>
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/notes" element={<Notes />} />
+          </Route>
+        </Route>
+      </Routes>
+    </Box>
   )
 }
 
