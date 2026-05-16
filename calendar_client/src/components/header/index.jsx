@@ -2,7 +2,7 @@ import { AppBar, Typography, Box, Button } from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import familyCalendar from '../../assets/familyCalendar.png'
+import logo from '../../assets/logo.png'
 import { logout } from '../../features/auth/authSlice'
 
 function Header() {
@@ -26,26 +26,38 @@ function Header() {
         py: 3.75,
       }}
     >
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h4" component="div" sx={{ color: '#20419c' }}>
-            Задания
-          </Typography>
-          <Box
-            component="img"
-            src={familyCalendar}
-            alt="Company logo"
-            sx={{ cursor: 'pointer', height: 50, ml: 2 }}
-          />
-        </Box>
+      <Toolbar sx={{ px: 0 }}>
+        <Box
+          sx={{
+            width: '100%',
+            maxWidth: 1440,
+            mx: 'auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 2,
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography variant="h4" component="div" sx={{ color: '#20419c' }}>
+              Задания
+            </Typography>
+            <Box
+              component="img"
+              src={logo}
+              alt="Company logo"
+              sx={{ cursor: 'pointer', height: 50, ml: 2 }}
+            />
+          </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body1" sx={{ color: '#20419c' }}>
-            {user?.name || 'User'}
-          </Typography>
-          <Button variant="contained" onClick={handleLogout}>
-            Выйти
-          </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body1" sx={{ color: '#20419c' }}>
+              {user?.name || 'User'}
+            </Typography>
+            <Button variant="contained" onClick={handleLogout}>
+              Выйти
+            </Button>
+          </Box>
         </Box>
       </Toolbar>
     </AppBar>
