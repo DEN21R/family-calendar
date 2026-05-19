@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { setError, setLoading, setUser } from '../../features/auth/authSlice'
 import authService from '../../services/authService'
-import { Box, Button, Typography, TextField } from '@mui/material'
+import { Box, Button, Typography, TextField, Alert } from '@mui/material'
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -12,104 +12,107 @@ function Register() {
     password: '',
     confirmPassword: '',
   })
-  const { name, email, password, confirmPassword } = formData
+  const { loading, error } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
-  const { loading, token, error } = useSelector((state) => state.auth)
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  useEffect(() => {
-    if (token) {
-      navigate('/calendar')
-    }
-  }, [token, navigate])
-
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (password !== confirmPassword) {
-      dispatch(setError('Passwords do not match'))
+    if (formData.password !== formData.confirmPassword) {
+      dispatch(setError('Пароли не совпадают'))
       return
     }
 
     dispatch(setLoading())
-
     try {
-      const data = await authService.register(name, email, password)
-      dispatch(setUser(data))
-      navigate('/calendar')
-    } catch (requestError) {
-      dispatch(
-        setError(requestError.response?.data?.error || 'Register failed'),
+      const response = await authService.register(
+        formData.name,
+        formData.email,
+        formData.password,
       )
+      dispatch(setUser(response))
+      navigate('/dashboard')
+    } catch (err) {
+      dispatch(setError(err.response?.data?.message || 'Ошибка регистрации'))
     }
   }
 
   return (
     <Box>
-      <Typography variant="h3" sx={{ color: 'blue' }}>
-        Register
+      <Typography
+        variant="h5"
+        sx={{ mb: 3, color: '#20419c', fontWeight: 'bold' }}
+      >
+        Регистрация
       </Typography>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
       <Box
         component="form"
         onSubmit={handleSubmit}
-        sx={{
-          backgroundColor: '#7897f3',
-          display: 'flex',
-          flexDirection: 'column',
-          p: 3,
-          mt: 2,
-          gap: 4,
-          maxWidth: 400,
-        }}
+        sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
       >
         <TextField
-          variant="outlined"
           type="text"
           name="name"
-          value={name}
+          value={formData.name}
           onChange={handleChange}
-          placeholder="name"
+          label="Имя"
           required
+          disabled={loading}
         />
         <TextField
-          variant="outlined"
           type="email"
           name="email"
-          value={email}
+          value={formData.email}
           onChange={handleChange}
-          placeholder="Email"
+          label="Email"
           required
+          disabled={loading}
         />
         <TextField
-          variant="outlined"
           type="password"
           name="password"
-          value={password}
+          value={formData.password}
           onChange={handleChange}
-          placeholder="Password"
+          label="Пароль"
           required
+          disabled={loading}
         />
         <TextField
-          variant="outlined"
           type="password"
           name="confirmPassword"
-          value={confirmPassword}
+          value={formData.confirmPassword}
           onChange={handleChange}
-          placeholder="Confirm Password"
+          label="Подтвердите пароль"
           required
+          disabled={loading}
         />
-
-        <Button type="submit" variant="contained" disabled={loading}>
-          {loading ? 'Loading...' : 'Register'}
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={loading}
+          sx={{ mt: 2 }}
+        >
+          {loading ? 'Загрузка...' : 'Зарегистрироваться'}
         </Button>
       </Box>
-      {error && <p>{error}</p>}
-      <Typography variant="h5" sx={{ color: 'blue' }}>
-        Already have an account? <Link to="/login">Login</Link>
+
+      <Typography variant="body2" sx={{ mt: 3, textAlign: 'center' }}>
+        Уже есть аккаунт?{' '}
+        <Button size="small" onClick={() => navigate('/login')}>
+          Войти
+        </Button>
       </Typography>
     </Box>
   )
