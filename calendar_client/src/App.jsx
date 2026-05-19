@@ -1,6 +1,6 @@
 import './App.css'
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { Calendar } from './pages/calendar'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from './pages/auth/Login'
@@ -21,9 +21,9 @@ import { Box } from '@mui/material'
 
 function App() {
   const dispatch = useDispatch()
+  const token = useSelector((state) => state.auth.token)
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
     if (!token) return
 
     const restoreSession = async () => {
@@ -51,7 +51,7 @@ function App() {
     }
 
     restoreSession()
-  }, [dispatch])
+  }, [dispatch, token])
 
   return (
     <Box
@@ -63,7 +63,7 @@ function App() {
       }}
     >
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Navigate to="/calendar" replace />} />
         <Route element={<PublicLayout />}>
           <Route path="/dashboard" element={<Home />} />
         </Route>
