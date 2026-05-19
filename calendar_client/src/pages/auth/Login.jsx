@@ -25,7 +25,7 @@ function Login() {
         formData.password,
       )
       dispatch(setUser(response))
-      navigate('/dashboard')
+      navigate('/calendar')
     } catch (err) {
       dispatch(setError(err.response?.data?.message || 'Ошибка входа'))
     }
