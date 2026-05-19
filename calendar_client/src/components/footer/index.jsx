@@ -10,7 +10,7 @@ function Footer() {
       sx={{
         borderTop: '1px solid rgba(32, 65, 156, 0.16)',
         py: 2,
-        backgroundColor: '#e1ebfa',
+        background: 'linear-gradient(135deg, #a78bfa, #7c3aed) !important',
       }}
     >
       <Box
