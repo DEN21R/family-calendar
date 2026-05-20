@@ -40,9 +40,6 @@ function App() {
           savedGroupId && groups.some((g) => g._id === savedGroupId)
         if (hasGroup) {
           dispatch(setActiveGroupId(savedGroupId))
-        } else if (groups.length > 0) {
-          dispatch(setActiveGroupId(groups[0]._id))
-          localStorage.setItem('activeGroupId', groups[0]._id)
         }
       } catch (error) {
         console.error('Error restoring session:', error)
