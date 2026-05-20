@@ -20,7 +20,9 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const hasToken = Boolean(localStorage.getItem('token'))
+
+    if (error.response?.status === 401 && hasToken) {
       localStorage.removeItem('token')
       window.location.href = '/dashboard'
     }
