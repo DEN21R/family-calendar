@@ -33,7 +33,6 @@ const groupSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase('auth/logout', () => {
-      localStorage.removeItem('activeGroupId')
       return initialState
     })
   },
