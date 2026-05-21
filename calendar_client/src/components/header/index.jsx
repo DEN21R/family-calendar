@@ -75,6 +75,32 @@ function Header() {
           >
             {token ?
               <>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate('/calendar')}
+                  sx={{
+                    borderColor: '#20419c',
+                    color: '#20419c',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    '&:hover': { borderColor: '#17327c', color: '#17327c' },
+                  }}
+                >
+                  Календарь
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate('/notes')}
+                  sx={{
+                    borderColor: '#20419c',
+                    color: '#20419c',
+                    fontWeight: 600,
+                    textTransform: 'none',
+                    '&:hover': { borderColor: '#17327c', color: '#17327c' },
+                  }}
+                >
+                  Заметки
+                </Button>
                 {groups.length > 0 && (
                   <Select
                     value={activeGroupId || ''}
