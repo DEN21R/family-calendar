@@ -2,7 +2,7 @@ import CalendarTask from '../models/CalendarTask.js'
 
 export const createTask = async (req, res) => {
   try {
-    const { title, task, date, time } = req.body
+    const { title, task, date, time, color } = req.body
     const { groupId } = req.params
 
     const userId = req.user.id
@@ -16,6 +16,7 @@ export const createTask = async (req, res) => {
       task,
       date,
       time,
+      color,
       groupId,
       createdBy: userId,
     })
