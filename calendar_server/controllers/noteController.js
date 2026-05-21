@@ -2,7 +2,7 @@ import Note from '../models/Note.js'
 
 export const createNote = async (req, res) => {
   try {
-    const { title, content } = req.body
+    const { title, content, type } = req.body
     const { groupId } = req.params
 
     const userId = req.user.id
@@ -14,10 +14,11 @@ export const createNote = async (req, res) => {
     const newNote = await Note.create({
       title,
       content,
+      type: type || 'plan',
       groupId,
       createdBy: userId,
     })
-    return res.status(201).json({ task: newNote })
+    return res.status(201).json({ note: newNote })
   } catch (error) {
     return res.status(400).json({ error: error.message })
   }
