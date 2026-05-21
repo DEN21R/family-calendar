@@ -6,6 +6,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ProtectedRoute from './components/ProtectedRoute'
+import GroupRequiredRoute from './components/GroupRequiredRoute'
 import AuthLayout from './layouts/AuthLayout'
 import PublicLayout from './layouts/PublicLayout'
 import MainLayout from './layouts/MainLayout'
@@ -16,7 +17,12 @@ import GroupSettings from './pages/group/GroupSettings'
 import authService from './services/authService'
 import groupService from './services/groupService'
 import { restoreAuth } from './features/auth/authSlice'
-import { setActiveGroupId, setGroups } from './features/group/groupSlice'
+import {
+  setActiveGroupId,
+  setGroupInitialized,
+  setGroupLoading,
+  setGroups,
+} from './features/group/groupSlice'
 import { Box } from '@mui/material'
 
 function App() {
@@ -24,9 +30,14 @@ function App() {
   const token = useSelector((state) => state.auth.token)
 
   useEffect(() => {
-    if (!token) return
+    if (!token) {
+      dispatch(setGroupInitialized(true))
+      return
+    }
 
     const restoreSession = async () => {
+      dispatch(setGroupInitialized(false))
+      dispatch(setGroupLoading(true))
       try {
         const profile = await authService.me()
         dispatch(restoreAuth(profile?.user || profile))
@@ -40,10 +51,17 @@ function App() {
           savedGroupId && groups.some((g) => g._id === savedGroupId)
         if (hasGroup) {
           dispatch(setActiveGroupId(savedGroupId))
+        } else if (groups.length > 0) {
+          dispatch(setActiveGroupId(groups[0]._id))
+        } else {
+          dispatch(setActiveGroupId(null))
         }
       } catch (error) {
         console.error('Error restoring session:', error)
         localStorage.removeItem('token')
+      } finally {
+        dispatch(setGroupLoading(false))
+        dispatch(setGroupInitialized(true))
       }
     }
 
@@ -71,12 +89,14 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route path="/groups/create" element={<CreateGroup />} />
-            <Route
-              path="/groups/:groupId/settings"
-              element={<GroupSettings />}
-            />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/notes" element={<Notes />} />
+            <Route element={<GroupRequiredRoute />}>
+              <Route
+                path="/groups/:groupId/settings"
+                element={<GroupSettings />}
+              />
+              <Route path="/calendar" element={<Calendar />} />
+              <Route path="/notes" element={<Notes />} />
+            </Route>
           </Route>
         </Route>
       </Routes>
