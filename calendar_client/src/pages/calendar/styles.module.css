@@ -1,0 +1,58 @@
+.wrapper {
+  padding: 20px;
+}
+
+:global(.fc-toolbar-title) {
+  font-size: 58px;
+}
+
+:global(.fc-button) {
+  background: rgb(32, 16, 208) !important;
+  border: none !important;
+}
+
+/* Все ячейки дней */
+:global(.fc-daygrid-day) {
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+}
+
+/* Ячейка с сегодняшней датой */
+:global(.fc-day-today) {
+  background: #fff3cd !important;
+}
+
+/* Число в ячейке */
+:global(.fc-daygrid-day-number) {
+  font-size: 14px;
+  font-weight: 600;
+  color: #20419c;
+  padding: 4px 8px;
+}
+
+/* Число в ячейке сегодняшнего дня */
+:global(.fc-day-today .fc-daygrid-day-number) {
+  background: #20419c;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Заголовки дней недели */
+:global(.fc-col-header-cell) {
+  background: #20419c;
+  color: #ffffff;
+  padding: 8px 0;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+:global(.fc-col-header-cell a) {
+  color: #ffffff !important;
+}
