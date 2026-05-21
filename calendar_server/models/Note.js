@@ -12,6 +12,11 @@ const noteSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    type: {
+      type: String,
+      enum: ['plan', 'wish'],
+      default: 'plan',
+    },
 
     groupId: {
       type: mongoose.Schema.Types.ObjectId,
