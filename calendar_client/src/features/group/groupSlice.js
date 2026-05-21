@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   activeGroupId: localStorage.getItem('activeGroupId') || null,
   groups: [],
+  initialized: false,
   loading: false,
   error: null,
 }
@@ -15,10 +16,15 @@ const groupSlice = createSlice({
       state.activeGroupId = action.payload
       if (action.payload) {
         localStorage.setItem('activeGroupId', action.payload)
+      } else {
+        localStorage.removeItem('activeGroupId')
       }
     },
     setGroups(state, action) {
       state.groups = action.payload
+    },
+    setGroupInitialized(state, action) {
+      state.initialized = action.payload
     },
     setGroupLoading(state, action) {
       state.loading = action.payload
@@ -33,7 +39,13 @@ const groupSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase('auth/logout', () => {
-      return initialState
+      localStorage.removeItem('activeGroupId')
+      return {
+        ...initialState,
+        initialized: false,
+        activeGroupId: null,
+        groups: [],
+      }
     })
   },
 })
@@ -41,6 +53,7 @@ const groupSlice = createSlice({
 export const {
   setActiveGroupId,
   setGroups,
+  setGroupInitialized,
   setGroupLoading,
   setGroupError,
   clearGroupState,
