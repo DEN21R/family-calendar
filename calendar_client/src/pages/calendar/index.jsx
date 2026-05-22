@@ -127,7 +127,7 @@ export function Calendar() {
 
   return (
     <Box>
-      <Typography variant="h4">
+      <Typography variant="h4" sx={{ fontWeight: 700 }}>
         {activeGroupName ? `Группа: ${activeGroupName}` : 'Мой календарь'}
       </Typography>
       <Box className={styles.wrapper}>
