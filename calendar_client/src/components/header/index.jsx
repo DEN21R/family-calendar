@@ -8,7 +8,7 @@ import {
 } from '@mui/material'
 import Toolbar from '@mui/material/Toolbar'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import logo from '../../assets/logo.png'
 import { logout } from '../../features/auth/authSlice'
 import { setActiveGroupId } from '../../features/group/groupSlice'
@@ -28,14 +28,23 @@ function Header() {
     const groupId = event.target.value
     dispatch(setActiveGroupId(groupId))
   }
-
+  const menuNav = [
+    {
+      navigate: '/calendar',
+      title: 'Календарь',
+    },
+    {
+      navigate: '/notes',
+      title: 'Заметки',
+    },
+  ]
   return (
     <AppBar
       position="static"
       elevation={0}
       sx={{
-        borderBottom: '2px solid #20419c',
-        background: 'linear-gradient(135deg, #a78bfa, #7c3aed) !important',
+        borderBottom: '2px solid #0a76ff',
+        background: '#ffffff',
         px: { xs: 2, sm: 3, md: 5 },
         py: 3.75,
       }}
@@ -53,15 +62,15 @@ function Header() {
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="h4" component="div" sx={{ color: '#20419c' }}>
-              Family Calendar
-            </Typography>
             <Box
               component="img"
               src={logo}
               alt="Company logo"
-              sx={{ cursor: 'pointer', height: 50, ml: 2 }}
+              sx={{ cursor: 'pointer', height: 60, ml: 2 }}
             />
+            <Typography variant="h4" component="div" sx={{ color: '#0a76ff' }}>
+              Family Calendar
+            </Typography>
           </Box>
 
           <Box
@@ -75,32 +84,25 @@ function Header() {
           >
             {token ?
               <>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/calendar')}
-                  sx={{
-                    borderColor: '#20419c',
-                    color: '#20419c',
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    '&:hover': { borderColor: '#17327c', color: '#17327c' },
-                  }}
-                >
-                  Календарь
-                </Button>
-                <Button
-                  variant="outlined"
-                  onClick={() => navigate('/notes')}
-                  sx={{
-                    borderColor: '#20419c',
-                    color: '#20419c',
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    '&:hover': { borderColor: '#17327c', color: '#17327c' },
-                  }}
-                >
-                  Заметки
-                </Button>
+                <Box sx={{ display: 'flex', gap: 3, mr: 2 }}>
+                  {menuNav.map((el) => (
+                    <Box
+                      key={el.navigate}
+                      component={NavLink}
+                      to={el.navigate}
+                      sx={{
+                        textDecoration: 'none',
+                        color: '#20419c',
+                        fontWeight: 600,
+                        '&.active': {
+                          color: '#20419c80',
+                        },
+                      }}
+                    >
+                      {el.title}
+                    </Box>
+                  ))}
+                </Box>
                 {groups.length > 0 && (
                   <Select
                     value={activeGroupId || ''}
