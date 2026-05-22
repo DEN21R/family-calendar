@@ -26,7 +26,6 @@ function GroupSettings() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { groups, error } = useSelector((state) => state.group)
-  const { user } = useSelector((state) => state.auth)
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteLoading, setInviteLoading] = useState(false)
   const [removeLoadingId, setRemoveLoadingId] = useState(null)
@@ -34,12 +33,11 @@ function GroupSettings() {
   const [localGroup, setLocalGroup] = useState(null)
 
   const currentGroup = groups.find((g) => g._id === groupId) || localGroup
-  const currentUserId = user?._id || user?.id
+  const toId = (value) => (value ? String(value) : '')
   const ownerId =
     typeof currentGroup?.owner === 'object' ?
       currentGroup.owner?._id || currentGroup.owner?.id
     : currentGroup?.owner
-  const isOwner = Boolean(currentUserId && ownerId && ownerId === currentUserId)
 
   useEffect(() => {
     if (!groupId) return
@@ -95,15 +93,18 @@ function GroupSettings() {
       )
       setInviteEmail('')
     } catch (err) {
-      dispatch(setGroupError(err.response?.data?.error || 'Ошибка инвайта'))
+      const apiError = err.response?.data?.error
+      const message =
+        apiError === 'User is already a member' ?
+          'Такой пользователь уже есть в группе'
+        : apiError || 'Ошибка инвайта'
+      dispatch(setGroupError(message))
     } finally {
       setInviteLoading(false)
     }
   }
 
   const handleRemoveMember = async (memberId) => {
-    if (!isOwner) return
-
     try {
       setRemoveLoadingId(memberId)
       const response = await groupService.removeMember(groupId, memberId)
@@ -113,7 +114,12 @@ function GroupSettings() {
         setGroups(groups.map((g) => (g._id === groupId ? updatedGroup : g))),
       )
     } catch (err) {
-      dispatch(setGroupError(err.response?.data?.error || 'Ошибка удаления'))
+      const apiError = err.response?.data?.error
+      const message =
+        apiError === 'Only owner can remove members' ?
+          'Удалять участников может только владелец группы'
+        : apiError || 'Ошибка удаления'
+      dispatch(setGroupError(message))
     } finally {
       setRemoveLoadingId(null)
     }
@@ -154,7 +160,7 @@ function GroupSettings() {
               <ListItem
                 key={memberId}
                 secondaryAction={
-                  isOwner && ownerId !== memberId ?
+                  toId(ownerId) !== toId(memberId) ?
                     <Button
                       size="small"
                       startIcon={<DeleteIcon />}
@@ -174,33 +180,31 @@ function GroupSettings() {
         </List>
       </Paper>
 
-      {isOwner && (
-        <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" sx={{ mb: 2, color: '#20419c' }}>
-            Пригласить участника
-          </Typography>
-          <Box
-            component="form"
-            onSubmit={handleInvite}
-            sx={{ display: 'flex', gap: 1 }}
+      <Paper sx={{ p: 3 }}>
+        <Typography variant="h6" sx={{ mb: 2, color: '#20419c' }}>
+          Пригласить участника
+        </Typography>
+        <Box
+          component="form"
+          onSubmit={handleInvite}
+          sx={{ display: 'flex', gap: 1 }}
+        >
+          <TextField
+            placeholder="Email"
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            size="small"
+            sx={{ flex: 1 }}
+          />
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={inviteLoading || !inviteEmail.trim()}
           >
-            <TextField
-              placeholder="Email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              size="small"
-              sx={{ flex: 1 }}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={inviteLoading || !inviteEmail.trim()}
-            >
-              {inviteLoading ? 'Отправляю...' : 'Пригласить'}
-            </Button>
-          </Box>
-        </Paper>
-      )}
+            {inviteLoading ? 'Отправляю...' : 'Пригласить'}
+          </Button>
+        </Box>
+      </Paper>
 
       {error && <Alert severity="error">{error}</Alert>}
     </Box>
