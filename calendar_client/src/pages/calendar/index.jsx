@@ -3,9 +3,10 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import ruLocale from '@fullcalendar/core/locales/ru'
 import { useSelector } from 'react-redux'
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, Button } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import TaskModal from '../../components/TaskModal'
+
 import {
   getTasks,
   createTask,
@@ -13,6 +14,7 @@ import {
   deleteTask,
 } from '../../services/taskService'
 import styles from './styles.module.css'
+import { useNavigate } from 'react-router-dom'
 
 const DEFAULT_TASK_COLOR = '#1976D2'
 
@@ -43,10 +45,12 @@ export function Calendar() {
   const [selectedDate, setSelectedDate] = useState('')
   const [editingTask, setEditingTask] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+
   const events = useMemo(
     () => (activeGroupId ? tasks : []),
     [activeGroupId, tasks],
   )
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (!activeGroupId) {
@@ -141,6 +145,21 @@ export function Calendar() {
       >
         {activeGroupName ? `Группа: ${activeGroupName}` : 'Мой календарь'}
       </Typography>
+      {activeGroupId && (
+        <Button
+          variant="outlined"
+          onClick={() => navigate(`/groups/${activeGroupId}/settings`)}
+          sx={{
+            borderColor: '#20419c',
+            color: '#20419c',
+            fontWeight: 600,
+            textTransform: 'none',
+            '&:hover': { borderColor: '#17327c', color: '#17327c' },
+          }}
+        >
+          Настройки группы
+        </Button>
+      )}
       <Box className={styles.wrapper}>
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
