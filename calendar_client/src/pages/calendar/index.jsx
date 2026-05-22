@@ -127,7 +127,18 @@ export function Calendar() {
 
   return (
     <Box>
-      <Typography variant="h4" sx={{ fontWeight: 700 }}>
+      <Typography
+        color="primary"
+        sx={{
+          fontWeight: 700,
+          fontSize: {
+            xs: '20px',
+            sm: '28px',
+            md: '36px',
+          },
+          ml: '20px',
+        }}
+      >
         {activeGroupName ? `Группа: ${activeGroupName}` : 'Мой календарь'}
       </Typography>
       <Box className={styles.wrapper}>
