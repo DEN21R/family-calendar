@@ -68,7 +68,7 @@ function Header() {
               alt="Company logo"
               sx={{ cursor: 'pointer', height: 60, ml: 2 }}
             />
-            <Typography variant="h4" component="div" sx={{ color: '#0a76ff' }}>
+            <Typography variant="h4" component="div" color="logo">
               Family Calendar
             </Typography>
           </Box>
@@ -122,23 +122,7 @@ function Header() {
                     ))}
                   </Select>
                 )}
-                {activeGroupId && (
-                  <Button
-                    variant="outlined"
-                    onClick={() =>
-                      navigate(`/groups/${activeGroupId}/settings`)
-                    }
-                    sx={{
-                      borderColor: '#20419c',
-                      color: '#20419c',
-                      fontWeight: 600,
-                      textTransform: 'none',
-                      '&:hover': { borderColor: '#17327c', color: '#17327c' },
-                    }}
-                  >
-                    Настройки группы
-                  </Button>
-                )}
+
                 <Button
                   variant="contained"
                   onClick={() => navigate('/groups/create')}
