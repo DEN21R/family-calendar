@@ -61,7 +61,7 @@
 
 /* Заголовки дней недели */
 :global(.fc-col-header-cell) {
-  background: #20419c;
+  background: #0051f9;
   color: #ffffff;
   padding: 8px 0;
   font-size: 13px;
