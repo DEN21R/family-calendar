@@ -88,18 +88,19 @@ export const inviteMember = async (req, res) => {
 export const removeMember = async (req, res) => {
   try {
     const { userId } = req.params
+    const targetUserId = String(userId)
     const requesterId = req.user.id
 
     if (req.group.owner.toString() !== requesterId) {
       return res.status(403).json({ error: 'Only owner can remove members' })
     }
 
-    if (req.group.owner.toString() === userId) {
+    if (req.group.owner.toString() === targetUserId) {
       return res.status(400).json({ error: 'Owner cannot be removed' })
     }
 
     const isMember = req.group.members.some(
-      (member) => member.toString() === userId,
+      (member) => member.toString() === targetUserId,
     )
 
     if (!isMember) {
@@ -107,7 +108,7 @@ export const removeMember = async (req, res) => {
     }
 
     req.group.members = req.group.members.filter(
-      (member) => member.toString() !== userId,
+      (member) => member.toString() !== targetUserId,
     )
 
     await req.group.save()
