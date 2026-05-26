@@ -69,14 +69,7 @@ function App() {
   }, [dispatch, token])
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        maxWidth: '1440px',
-        width: '100%',
-        mx: 'auto',
-      }}
-    >
+    <Box className="app-shell">
       <Routes>
         <Route path="/" element={<Navigate to="/calendar" replace />} />
         <Route element={<PublicLayout />}>
