@@ -12,7 +12,7 @@ const theme = createTheme({
       main: '#20419c',
     },
     logo: {
-      main: '#0a76ff',
+      main: '#24223c',
     },
   },
   typography: {
