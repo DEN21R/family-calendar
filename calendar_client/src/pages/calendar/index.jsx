@@ -131,35 +131,44 @@ export function Calendar() {
 
   return (
     <Box>
-      <Typography
-        color="primary"
+      <Box
         sx={{
-          fontWeight: 700,
-          fontSize: {
-            xs: '20px',
-            sm: '28px',
-            md: '36px',
-          },
-          ml: '20px',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'flex-start',
+          gap: 2,
         }}
       >
-        {activeGroupName ? `Группа: ${activeGroupName}` : 'Мой календарь'}
-      </Typography>
-      {activeGroupId && (
-        <Button
-          variant="outlined"
-          onClick={() => navigate(`/groups/${activeGroupId}/settings`)}
+        <Typography
+          color="primary"
           sx={{
-            borderColor: '#20419c',
-            color: '#20419c',
-            fontWeight: 600,
-            textTransform: 'none',
-            '&:hover': { borderColor: '#17327c', color: '#17327c' },
+            fontWeight: 500,
+            fontSize: {
+              xs: '20px',
+              sm: '28px',
+              md: '36px',
+            },
           }}
         >
-          Настройки группы
-        </Button>
-      )}
+          {activeGroupName ? `Группа: ${activeGroupName}` : 'Мой календарь'}
+        </Typography>
+        {activeGroupId && (
+          <Button
+            variant="outlined"
+            onClick={() => navigate(`/groups/${activeGroupId}/settings`)}
+            sx={{
+              borderColor: '#20419c',
+              color: '#20419c',
+              fontWeight: 600,
+              textTransform: 'none',
+              '&:hover': { borderColor: '#17327c', color: '#17327c' },
+            }}
+          >
+            Настройки группы
+          </Button>
+        )}
+      </Box>
       <Box className={styles.wrapper}>
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
