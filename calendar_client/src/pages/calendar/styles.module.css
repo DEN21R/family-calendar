@@ -1,40 +1,76 @@
 .wrapper {
-  padding: 20px;
+  padding: 0;
 }
 
-:global(.fc-toolbar-title) {
-  font-size: 58px;
+:global(.fc .fc-toolbar.fc-header-toolbar) {
+  margin-bottom: 1rem;
 }
 
-:global(.fc-button) {
-  background: rgb(32, 16, 208) !important;
-  border: none !important;
+@media (min-width: 900px) {
+  :global(.fc .fc-toolbar.fc-header-toolbar) {
+    margin-bottom: 1.5rem;
+  }
 }
 
-/* Все ячейки дней */
-:global(.fc-daygrid-day) {
+:global(.fc .fc-toolbar-title) {
+  font-size: 1rem;
+  color: #24223c;
+}
+
+@media (min-width: 900px) {
+  :global(.fc .fc-toolbar-title) {
+    font-size: 1.75rem;
+  }
+}
+
+:global(.fc .fc-button) {
+  background: rgb(32, 16, 208);
+  border: none;
+  font-size: 0.8rem;
+}
+
+@media (min-width: 900px) {
+  :global(.fc .fc-button) {
+    font-size: 1rem;
+  }
+}
+
+/* Day cells */
+:global(.fc .fc-daygrid-day) {
   background: #f5f9ff;
   border: none;
-  gap: 10px;
 }
 
-/* Ячейка с сегодняшшей датой */
-:global(.fc-day-today) {
+/* Today cell */
+:global(.fc .fc-day-today) {
   background: #fff3cd !important;
 }
 
-/* Число в ячейке */
-:global(.fc-daygrid-day-number) {
-  font-size: 20px;
+/* Day number */
+:global(.fc .fc-daygrid-day-number) {
+  font-size: 12px;
   font-weight: 600;
   color: #20419c;
   padding: 4px 8px;
 }
+
+@media (min-width: 600px) {
+  :global(.fc .fc-daygrid-day-number) {
+    font-size: 16px;
+  }
+}
+
+@media (min-width: 900px) {
+  :global(.fc .fc-daygrid-day-number) {
+    font-size: 20px;
+  }
+}
+
 :global(.fc-direction-ltr .fc-daygrid-event.fc-event-end),
 :global(.fc-direction-rtl .fc-daygrid-event.fc-event-start) {
   margin-right: 2px;
-  gap: 10px;
 }
+
 :global(.fc-theme-standard td) {
   border: 1px solid #181717 !important;
 }
@@ -47,20 +83,36 @@
   min-height: 100%;
   position: relative;
   padding: 5px;
-} /* Число в ячейке сегодняшнего дня */
-:global(.fc-day-today .fc-daygrid-day-number) {
+}
+
+/* Today number */
+:global(.fc .fc-day-today .fc-daygrid-day-number) {
   background: #20419c;
   color: #ffffff;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-/* Заголовки дней недели */
-:global(.fc-col-header-cell) {
+@media (min-width: 800px) {
+  :global(.fc .fc-day-today .fc-daygrid-day-number) {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+@media (min-width: 1250px) {
+  :global(.fc .fc-day-today .fc-daygrid-day-number) {
+    width: 28px;
+    height: 28px;
+  }
+}
+
+/* Weekday header */
+:global(.fc .fc-col-header-cell) {
   background: #0051f9;
   color: #ffffff;
   padding: 8px 0;
@@ -70,11 +122,26 @@
   letter-spacing: 0.05em;
 }
 
-:global(.fc-col-header-cell a) {
-  color: #ffffff !important;
+:global(.fc .fc-col-header-cell a) {
+  color: #ffffff;
 }
-:global(.fc-daygrid-event) {
-  font-size: var(--fc-small-font-size);
+
+:global(.fc .fc-daygrid-event) {
+  font-size: 10px;
   font-weight: 800;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (min-width: 800px) {
+  :global(.fc .fc-daygrid-event) {
+    font-size: 12px;
+  }
+}
+
+@media (min-width: 1250px) {
+  :global(.fc .fc-daygrid-event) {
+    font-size: 14px;
+  }
 }
