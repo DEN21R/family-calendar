@@ -3,15 +3,37 @@ import {
   Typography,
   Box,
   Button,
-  Select,
   MenuItem,
+  IconButton,
+  Menu,
+  Divider,
 } from '@mui/material'
+import Avatar from '@mui/material/Avatar'
 import Toolbar from '@mui/material/Toolbar'
+import MenuIcon from '@mui/icons-material/Menu'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
 import logo from '../../assets/logo.png'
 import { logout } from '../../features/auth/authSlice'
 import { setActiveGroupId } from '../../features/group/groupSlice'
+
+function stringToColor(string) {
+  let hash = 0
+
+  for (let i = 0; i < string.length; i += 1) {
+    hash = string.charCodeAt(i) + ((hash << 5) - hash)
+  }
+
+  let color = '#'
+
+  for (let i = 0; i < 3; i += 1) {
+    const value = (hash >> (i * 8)) & 0xff
+    color += `00${value.toString(16)}`.slice(-2)
+  }
+
+  return color
+}
 
 function Header() {
   const dispatch = useDispatch()
@@ -19,15 +41,32 @@ function Header() {
   const { user, token } = useSelector((state) => state.auth)
   const { groups, activeGroupId } = useSelector((state) => state.group)
 
+  const [anchorEl, setAnchorEl] = useState(null)
+  const open = Boolean(anchorEl)
+  const [groupAnchorEl, setGroupAnchorEl] = useState(null)
+  const groupMenuOpen = Boolean(groupAnchorEl)
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null)
+  }
+
+  const handleOpenGroupMenu = (event) => {
+    setGroupAnchorEl(event.currentTarget)
+  }
+
+  const handleCloseGroupMenu = () => {
+    setGroupAnchorEl(null)
+  }
+
   const handleLogout = () => {
     dispatch(logout())
     navigate('/dashboard')
   }
 
-  const handleGroupChange = (event) => {
-    const groupId = event.target.value
-    dispatch(setActiveGroupId(groupId))
-  }
   const menuNav = [
     {
       navigate: '/calendar',
@@ -41,6 +80,10 @@ function Header() {
       navigate: '/groups/create',
       title: 'Создать группу',
     },
+    {
+      title: 'Выбрать группу',
+      isGroupLabel: true,
+    },
   ]
   return (
     <AppBar
@@ -49,7 +92,7 @@ function Header() {
       sx={{
         borderBottom: '2px solid #e8e8ed',
         background: '#ffffff',
-        py: 3.75,
+        py: { xs: 2, sm: 3.75 },
       }}
     >
       <Toolbar disableGutters sx={{ px: 0 }}>
@@ -75,7 +118,7 @@ function Header() {
               color="logo"
               sx={{
                 display: { xs: 'none', sm: 'block' },
-                fontSize: { sm: '1.6rem', md: '2.125rem' },
+                fontSize: { sm: '1.4rem', md: '2.125rem' },
                 lineHeight: 1.1,
                 whiteSpace: 'nowrap',
               }}
@@ -95,55 +138,128 @@ function Header() {
           >
             {token ?
               <>
-                <Box sx={{ display: 'flex', gap: 3 }}>
-                  {menuNav.map((el) => (
-                    <Box
-                      key={el.navigate}
-                      component={NavLink}
-                      to={el.navigate}
-                      sx={{
-                        textDecoration: 'none',
-                        color: '#20419c',
-                        fontWeight: 600,
-                        '&.active': {
-                          color: '#20419c80',
-                        },
+                <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3 }}>
+                  {menuNav.map((el) =>
+                    el.isGroupLabel ?
+                      <Button
+                        key={el.title}
+                        onClick={handleOpenGroupMenu}
+                        sx={{
+                          textTransform: 'none',
+                          color: '#20419c',
+                          fontWeight: 600,
+                          p: 0,
+                          minWidth: 'auto',
+                        }}
+                      >
+                        {el.title}
+                      </Button>
+                    : <Box
+                        key={el.navigate}
+                        component={NavLink}
+                        to={el.navigate}
+                        sx={{
+                          textDecoration: 'none',
+                          color: '#20419c',
+                          fontWeight: 600,
+                          '&.active': {
+                            color: '#20419c80',
+                          },
+                        }}
+                      >
+                        {el.title}
+                      </Box>,
+                  )}
+                </Box>
+                <IconButton
+                  onClick={handleOpenMenu}
+                  sx={{ display: { xs: 'flex', md: 'none' } }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleCloseMenu}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {menuNav.map((el) =>
+                    el.isGroupLabel ?
+                      groups.length > 0 ?
+                        <MenuItem
+                          key={el.title}
+                          disabled
+                          sx={{ opacity: 1, fontWeight: 700 }}
+                        >
+                          {el.title}
+                        </MenuItem>
+                      : null
+                    : <MenuItem
+                        key={el.navigate}
+                        onClick={() => {
+                          handleCloseMenu()
+                          navigate(el.navigate)
+                        }}
+                      >
+                        {el.title}
+                      </MenuItem>,
+                  )}
+                  {groups.length > 0 && <Divider />}
+                  {groups.map((group) => (
+                    <MenuItem
+                      key={group._id}
+                      selected={activeGroupId === group._id}
+                      onClick={() => {
+                        dispatch(setActiveGroupId(group._id))
+                        handleCloseMenu()
+                        handleCloseGroupMenu()
                       }}
                     >
-                      {el.title}
-                    </Box>
+                      {group.name}
+                    </MenuItem>
                   ))}
-                </Box>
-                {groups.length > 0 && (
-                  <Select
-                    value={activeGroupId || ''}
-                    onChange={handleGroupChange}
-                    sx={{
-                      backgroundColor: '#ffffff',
-                      color: '#20419c',
-                      fontWeight: 500,
-                      borderRadius: 1,
-                      minWidth: 160,
-                      '& .MuiSelect-select': {
-                        padding: '6px 12px',
-                      },
-                      '& .MuiSelect-icon': {
-                        color: '#20419c',
-                      },
-                    }}
-                    displayEmpty
-                  >
-                    {groups.map((group) => (
-                      <MenuItem key={group._id} value={group._id}>
-                        {group.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                )}
+                </Menu>
+                <Menu
+                  anchorEl={groupAnchorEl}
+                  open={groupMenuOpen}
+                  onClose={handleCloseGroupMenu}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {groups.map((group) => (
+                    <MenuItem
+                      key={group._id}
+                      selected={activeGroupId === group._id}
+                      onClick={() => {
+                        dispatch(setActiveGroupId(group._id))
+                        handleCloseGroupMenu()
+                      }}
+                    >
+                      {group.name}
+                    </MenuItem>
+                  ))}
+                </Menu>
+                <Avatar
+                  sx={{
+                    bgcolor: stringToColor(user?.name || 'User'),
+                  }}
+                >
+                  {user?.name?.charAt(0).toUpperCase()}
+                </Avatar>
 
-                <Typography variant="body1" sx={{ color: '#20419c' }}>
-                  {user?.name || 'User'}
-                </Typography>
                 <Button variant="contained" onClick={handleLogout}>
                   Выйти
                 </Button>
