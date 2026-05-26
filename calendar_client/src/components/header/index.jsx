@@ -37,38 +37,49 @@ function Header() {
       navigate: '/notes',
       title: 'Заметки',
     },
+    {
+      navigate: '/groups/create',
+      title: 'Создать группу',
+    },
   ]
   return (
     <AppBar
       position="static"
       elevation={0}
       sx={{
-        borderBottom: '2px solid #0a76ff',
+        borderBottom: '2px solid #e8e8ed',
         background: '#ffffff',
-        px: { xs: 2, sm: 3, md: 5 },
         py: 3.75,
       }}
     >
-      <Toolbar sx={{ px: 0 }}>
+      <Toolbar disableGutters sx={{ px: 0 }}>
         <Box
           sx={{
             width: '100%',
-            maxWidth: 1440,
-            mx: 'auto',
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             gap: 2,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <Box
               component="img"
               src={logo}
               alt="Company logo"
-              sx={{ cursor: 'pointer', height: 60, ml: 2 }}
+              sx={{ cursor: 'pointer', height: 60 }}
             />
-            <Typography variant="h4" component="div" color="logo">
+            <Typography
+              variant="h4"
+              component="div"
+              color="logo"
+              sx={{
+                display: { xs: 'none', sm: 'block' },
+                fontSize: { sm: '1.6rem', md: '2.125rem' },
+                lineHeight: 1.1,
+                whiteSpace: 'nowrap',
+              }}
+            >
               Family Calendar
             </Typography>
           </Box>
@@ -84,7 +95,7 @@ function Header() {
           >
             {token ?
               <>
-                <Box sx={{ display: 'flex', gap: 3, mr: 2 }}>
+                <Box sx={{ display: 'flex', gap: 3 }}>
                   {menuNav.map((el) => (
                     <Box
                       key={el.navigate}
@@ -113,7 +124,14 @@ function Header() {
                       fontWeight: 500,
                       borderRadius: 1,
                       minWidth: 160,
+                      '& .MuiSelect-select': {
+                        padding: '6px 12px',
+                      },
+                      '& .MuiSelect-icon': {
+                        color: '#20419c',
+                      },
                     }}
+                    displayEmpty
                   >
                     {groups.map((group) => (
                       <MenuItem key={group._id} value={group._id}>
@@ -123,19 +141,6 @@ function Header() {
                   </Select>
                 )}
 
-                <Button
-                  variant="contained"
-                  onClick={() => navigate('/groups/create')}
-                  sx={{
-                    backgroundColor: '#20419c',
-                    color: '#ffffff',
-                    fontWeight: 600,
-                    textTransform: 'none',
-                    '&:hover': { backgroundColor: '#17327c' },
-                  }}
-                >
-                  Новая группа
-                </Button>
                 <Typography variant="body1" sx={{ color: '#20419c' }}>
                   {user?.name || 'User'}
                 </Typography>
