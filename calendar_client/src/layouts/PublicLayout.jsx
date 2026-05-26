@@ -5,16 +5,18 @@ import Footer from '../components/footer'
 
 function PublicLayout() {
   return (
-    <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
       <Header />
       <Box
         component="main"
         sx={{
           flex: 1,
-          width: '100%',
-          maxWidth: 1440,
-          mx: 'auto',
-          px: { xs: 2, sm: 3, md: 4 },
           py: { xs: 3, md: 5 },
         }}
       >
