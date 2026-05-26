@@ -9,12 +9,13 @@ function Footer() {
       component="footer"
       sx={{
         borderTop: '1px solid rgba(32, 65, 156, 0.16)',
-        py: 2,
+        py: 3,
         background: 'linear-gradient(135deg, #a78bfa, #7c3aed) !important',
       }}
     >
       <Box
         sx={{
+          width: '100%',
           display: 'grid',
           gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, 1fr)' },
           gap: 3,
@@ -125,10 +126,6 @@ function Footer() {
       </Box>
       <Box
         sx={{
-          width: '100%',
-          maxWidth: 1440,
-          mx: 'auto',
-          px: 10,
           py: 2,
           pt: 4,
           textAlign: 'center',
