@@ -265,11 +265,16 @@ function Header() {
                 </Button>
               </>
             : <>
-                <Button variant="outlined" onClick={() => navigate('/login')}>
+                <Button
+                  variant="outlined"
+                  sx={{ color: '#0051f9' }}
+                  onClick={() => navigate('/login')}
+                >
                   Войти
                 </Button>
                 <Button
                   variant="contained"
+                  sx={{ backgroundColor: '#0051f9' }}
                   onClick={() => navigate('/register')}
                 >
                   Регистрация
