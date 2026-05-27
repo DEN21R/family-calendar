@@ -138,6 +138,7 @@ export function Calendar() {
           justifyContent: 'center',
           alignItems: 'flex-start',
           gap: 2,
+          mb: 3,
         }}
       >
         <Typography
@@ -145,9 +146,9 @@ export function Calendar() {
           sx={{
             fontWeight: 500,
             fontSize: {
-              xs: '20px',
-              sm: '28px',
-              md: '36px',
+              xs: '16px',
+              sm: '20px',
+              md: '28px',
             },
           }}
         >

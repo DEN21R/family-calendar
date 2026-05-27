@@ -56,13 +56,13 @@
 
 @media (min-width: 600px) {
   :global(.fc .fc-daygrid-day-number) {
-    font-size: 16px;
+    font-size: 14px;
   }
 }
 
 @media (min-width: 900px) {
   :global(.fc .fc-daygrid-day-number) {
-    font-size: 20px;
+    font-size: 16px;
   }
 }
 
@@ -82,7 +82,6 @@
 :global(.fc .fc-daygrid-day-frame) {
   min-height: 100%;
   position: relative;
-  padding: 5px;
 }
 
 /* Today number */
@@ -95,6 +94,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 5px;
 }
 
 @media (min-width: 800px) {
@@ -132,6 +132,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  gap: 3px;
 }
 
 @media (min-width: 800px) {
