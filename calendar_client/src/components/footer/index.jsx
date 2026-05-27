@@ -1,7 +1,23 @@
-import { Box, Typography } from '@mui/material'
+import { Box, Typography, Paper } from '@mui/material'
 import XIcon from '@mui/icons-material/X'
 import FacebookIcon from '@mui/icons-material/Facebook'
 import InstagramIcon from '@mui/icons-material/Instagram'
+import { styled } from '@mui/material/styles'
+import logoAl from '../../assets/logoAl.png'
+
+const Item = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2.5),
+  backgroundColor: '#c5cfea80',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: theme.spacing(0.5),
+  boxShadow: 'none',
+  [theme.breakpoints.up('sm')]: {
+    padding: theme.spacing(3),
+    alignItems: 'center',
+  },
+}))
 
 function Footer() {
   return (
@@ -10,82 +26,92 @@ function Footer() {
       sx={{
         borderTop: '1px solid rgba(32, 65, 156, 0.16)',
         py: 3,
-        background: 'linear-gradient(135deg, #a78bfa, #7c3aed) !important',
+        // background: 'linear-gradient(135deg, #a78bfa, #7c3aed) !important',
+        background: '#ffffff',
       }}
     >
       <Box
         sx={{
           width: '100%',
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4, 1fr)' },
-          gap: 3,
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: '1fr 1fr',
+            md: 'repeat(4, 1fr)',
+          },
+          gap: { xs: 1.5, sm: 2, md: 3 },
         }}
       >
-        <Box>
-          <Typography variant="h6" sx={{ textAlign: 'center' }}>
-            Family Calendar
-          </Typography>
-          <Typography
-            variant="body2"
+        <Item>
+          <Box
             sx={{
-              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              justifyContent: { xs: 'flex-start', sm: 'center' },
               width: '100%',
+            }}
+          >
+            <Box
+              component="img"
+              src={logoAl}
+              alt="Company logo"
+              sx={{
+                cursor: 'pointer',
+                height: { xs: 34, sm: 40 },
+                pb: { xs: 1, sm: 2 },
+              }}
+            />
+            <Typography color="logo" variant="footerTitle">
+              Family Calendar
+            </Typography>
+          </Box>
+
+          <Typography
+            color="logo"
+            variant="footerDescription"
+            sx={{
               maxWidth: 240,
-              mx: 'auto',
-              mt: 1,
+              textAlign: { xs: 'left', sm: 'center' },
             }}
           >
             {' '}
             Планируйте важное Проводите больше времени с семьей
           </Typography>
-        </Box>
-        <Box>
-          <Typography variant="h6" sx={{ textAlign: 'center' }}>
-            Навигация
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
-            Kалендарь
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
-            Заметки
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
-            Семья
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
-            Настройки
-          </Typography>
-        </Box>
-        <Box>
-          <Typography variant="h6" sx={{ textAlign: 'center' }}>
-            Поддержка
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
-            Помощь
-          </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
+        </Item>
+        <Item>
+          <Typography variant="footerTitle">Навигация</Typography>
+          <Typography variant="footerDescription">Kалендарь</Typography>
+          <Typography variant="footerDescription">Заметки</Typography>
+          <Typography variant="footerDescription">Семья</Typography>
+          <Typography variant="footerDescription">Настройки</Typography>
+        </Item>
+        <Item>
+          <Typography variant="footerTitle">Поддержка</Typography>
+          <Typography variant="footerDescription">Помощь</Typography>
+          <Typography variant="footerDescription">
             Политика конфиденциальности
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center' }}>
+          <Typography variant="footerDescription">
             Условия использования
           </Typography>
-        </Box>
-        <Box>
-          <Typography variant="h6" sx={{ textAlign: 'center' }}>
-            Мы в соцсетях
-          </Typography>
+        </Item>
+        <Item>
+          <Typography variant="footerTitle">Мы в соцсетях</Typography>
           <Box
-            sx={{ display: 'flex', justifyContent: 'center', gap: 2, mt: 1 }}
+            sx={{
+              display: 'flex',
+              justifyContent: { xs: 'flex-start', sm: 'center' },
+              gap: 2,
+              mt: 1,
+              width: '100%',
+            }}
           >
-            <a
-              href="https://x.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'inherit' }}
-            >
+            <a href="https://x.com" target="_blank" rel="noopener noreferrer">
               <XIcon
+                color="secondary"
                 sx={{
-                  fontSize: 32,
+                  fontSize: { xs: 28, sm: 32 },
                   transition: '0.2s',
                   '&:hover': { opacity: 0.6 },
                 }}
@@ -96,11 +122,11 @@ function Footer() {
               href="https://facebook.com"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: 'inherit' }}
             >
               <FacebookIcon
+                color="secondary"
                 sx={{
-                  fontSize: 32,
+                  fontSize: { xs: 28, sm: 32 },
                   transition: '0.2s',
                   '&:hover': { opacity: 0.6 },
                 }}
@@ -111,23 +137,23 @@ function Footer() {
               href="https://instagram.com"
               target="_blank"
               rel="noopener noreferrer"
-              style={{ color: 'inherit' }}
             >
               <InstagramIcon
+                color="secondary"
                 sx={{
-                  fontSize: 32,
+                  fontSize: { xs: 28, sm: 32 },
                   transition: '0.2s',
                   '&:hover': { opacity: 0.6 },
                 }}
               />
             </a>
           </Box>
-        </Box>
+        </Item>
       </Box>
       <Box
         sx={{
           py: 2,
-          pt: 4,
+          pt: { xs: 2.5, sm: 4 },
           textAlign: 'center',
         }}
       >
