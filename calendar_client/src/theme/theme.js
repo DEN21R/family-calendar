@@ -39,6 +39,27 @@ const theme = createTheme({
             paddingBottom: '16px',
           },
         },
+        {
+          props: { variant: 'Title' },
+          style: {
+            fontSize: '1.875rem',
+            fontWeight: 500,
+            color: '#24223c',
+            lineHeight: 1.1,
+          },
+        },
+        {
+          props: { variant: 'TitleText' },
+          style: {
+            fontWeight: 400,
+            fontSize: '1rem',
+            lineHeight: 1.5,
+            marginTop: '16px',
+            maxWidth: '620px',
+            color: '#24223c',
+            opacity: 0.8,
+          },
+        },
       ],
     },
   },
