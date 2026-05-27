@@ -18,6 +18,30 @@ const theme = createTheme({
   typography: {
     fontFamily: 'Montserrat',
   },
+  components: {
+    MuiTypography: {
+      variants: [
+        {
+          props: { variant: 'footerDescription' },
+          style: {
+            fontSize: '0.875rem',
+            fontWeight: 400,
+            color: '#24223c',
+            opacity: 0.8,
+          },
+        },
+        {
+          props: { variant: 'footerTitle' },
+          style: {
+            fontSize: '1.25rem',
+            fontWeight: 500,
+            color: '#24223c',
+            paddingBottom: '16px',
+          },
+        },
+      ],
+    },
+  },
 })
 
 export default theme
