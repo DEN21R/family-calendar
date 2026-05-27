@@ -1,5 +1,4 @@
 import { Box, Button, Typography } from '@mui/material'
-import logo from '../../assets/logo.png'
 import { useNavigate } from 'react-router-dom'
 import familyFoto from '../../assets/familyFoto.png'
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth'
@@ -14,18 +13,6 @@ function Home() {
     <Box
       sx={{ display: 'flex', flexDirection: 'column', gap: { xs: 4, md: 6 } }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-        <Box
-          component="img"
-          src={logo}
-          alt="Company logo"
-          sx={{ cursor: 'pointer', height: 54 }}
-        />
-        <Typography variant="h4" sx={{ color: '#20419c' }}>
-          Family Calendar
-        </Typography>
-      </Box>
-
       <Box
         sx={{
           display: 'grid',
@@ -35,27 +22,25 @@ function Home() {
         }}
       >
         <Box>
-          <Typography variant="h3" sx={{ lineHeight: 1.1 }}>
-            Планируйте семейные дела вместе
-          </Typography>
-          <Typography variant="body1" sx={{ mt: 2, maxWidth: 620 }}>
-            Family Calendar помогает вашей семье быть организованной, не
-            забывать важные события и проводить больше времени вместе.
-          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Typography variant="Title">
+              Планируйте семейные дела вместе
+            </Typography>
+            <Typography variant="TitleText">
+              Family Calendar помогает вашей семье быть организованной, не
+              забывать важные события и проводить больше времени вместе.
+            </Typography>
+          </Box>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 3 }}>
             <Button
-              variant="outlined"
-              sx={{ color: '#000' }}
+              variant="contained"
+              sx={{ backgroundColor: '#0051f9' }}
               onClick={() => navigate('/login')}
             >
-              Войти в календарь
+              Начать бесплатно
             </Button>
-            <Button
-              variant="contained"
-              sx={{ backgroundColor: '#438cf8' }}
-              onClick={() => navigate('/register')}
-            >
-              Зарегистрироваться
+            <Button variant="contained" disabled>
+              Узнать больше
             </Button>
           </Box>
         </Box>
