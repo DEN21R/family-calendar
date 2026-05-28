@@ -10,20 +10,25 @@ import {
 
 function NotesCard({ item, handleEdit, handleDelete, title }) {
   return (
-    <Box>
-      <Typography variant="h6" sx={{ mb: 1 }}>
-        {title}
-      </Typography>
+    <Box sx={{ mb: 4 }}>
+      <Typography variant="h6">{title}</Typography>
       <Stack spacing={1}>
         {item.map((note) => (
-          <Card key={note._id}>
+          <Card
+            sx={{
+              backgroundColor:
+                note.type === 'plan' ? '#fbf1d4'
+                : note.type === 'wish' ? '#defddf'
+                : '#fae0ff',
+            }}
+            key={note._id}
+          >
             <CardContent>
               <Stack
                 direction="row"
                 justifyContent="space-between"
                 sx={{ mb: 1 }}
               >
-                <Typography variant="subtitle1">{note.title}</Typography>
                 <Chip
                   size="small"
                   label={
@@ -32,13 +37,17 @@ function NotesCard({ item, handleEdit, handleDelete, title }) {
                       'Пожелание'
                     : 'Идея'
                   }
-                  color={
-                    note.type === 'plan' ? 'primary'
-                    : note.type === 'wish' ?
-                      'secondary'
-                    : 'default'
-                  }
+                  sx={{
+                    backgroundColor:
+                      note.type === 'plan' ? 'plan.main'
+                      : note.type === 'wish' ? 'wish.main'
+                      : 'idea.main',
+                  }}
+                  color={'primary'}
                 />
+                <Typography variant="subtitle1" sx={{ ml: 1 }}>
+                  {note.title}
+                </Typography>
               </Stack>
               <Typography variant="body2" sx={{ mb: 1 }}>
                 {note.content}
