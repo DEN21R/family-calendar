@@ -110,7 +110,7 @@ function Register() {
           type="submit"
           variant="contained"
           disabled={loading}
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, backgroundColor: '#0051f9' }}
         >
           {loading ? 'Загрузка...' : 'Зарегистрироваться'}
         </Button>
