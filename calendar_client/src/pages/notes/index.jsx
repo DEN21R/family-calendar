@@ -22,6 +22,7 @@ import {
   updateNote,
   deleteNote,
 } from '../../services/noteService'
+import NotesCard from '../../components/card/NotesCard.jsx'
 
 const emptyForm = {
   title: '',
@@ -80,6 +81,10 @@ function Notes() {
   )
   const wishes = useMemo(
     () => notes.filter((note) => note.type === 'wish'),
+    [notes],
+  )
+  const ideas = useMemo(
+    () => notes.filter((note) => note.type === 'idea'),
     [notes],
   )
 
@@ -162,7 +167,7 @@ function Notes() {
   return (
     <Box>
       <Typography variant="h4" sx={{ mb: 1 }}>
-        Планы и пожелания группы
+        Планы , идеи и пожелания группы
       </Typography>
       <Typography variant="body2" sx={{ mb: 3, opacity: 0.8 }}>
         Здесь хранится общее видение семьи: планы, идеи, пожелания на будущее.
@@ -195,6 +200,7 @@ function Notes() {
         >
           <MenuItem value="plan">План</MenuItem>
           <MenuItem value="wish">Пожелание</MenuItem>
+          <MenuItem value="idea">Идея</MenuItem>
         </Select>
 
         <TextField
@@ -215,76 +221,24 @@ function Notes() {
           <Button onClick={resetForm}>Очистить</Button>
         </Stack>
       </Stack>
-
-      <Typography variant="h6" sx={{ mb: 1 }}>
-        Планы группы
-      </Typography>
-      <Stack spacing={1} sx={{ mb: 3 }}>
-        {plans.map((note) => (
-          <Card key={note._id}>
-            <CardContent>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                sx={{ mb: 1 }}
-              >
-                <Typography variant="subtitle1">{note.title}</Typography>
-                <Chip size="small" label="План" color="primary" />
-              </Stack>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                {note.content}
-              </Typography>
-              <Stack direction="row" spacing={1}>
-                <Button size="small" onClick={() => handleEdit(note)}>
-                  Редактировать
-                </Button>
-                <Button
-                  size="small"
-                  color="error"
-                  onClick={() => handleDelete(note._id)}
-                >
-                  Удалить
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        ))}
-      </Stack>
-
-      <Typography variant="h6" sx={{ mb: 1 }}>
-        Пожелания на будущее
-      </Typography>
-      <Stack spacing={1}>
-        {wishes.map((note) => (
-          <Card key={note._id}>
-            <CardContent>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                sx={{ mb: 1 }}
-              >
-                <Typography variant="subtitle1">{note.title}</Typography>
-                <Chip size="small" label="Пожелание" color="secondary" />
-              </Stack>
-              <Typography variant="body2" sx={{ mb: 1 }}>
-                {note.content}
-              </Typography>
-              <Stack direction="row" spacing={1}>
-                <Button size="small" onClick={() => handleEdit(note)}>
-                  Редактировать
-                </Button>
-                <Button
-                  size="small"
-                  color="error"
-                  onClick={() => handleDelete(note._id)}
-                >
-                  Удалить
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        ))}
-      </Stack>
+      <NotesCard
+        item={plans}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        title="Планы группы"
+      />
+      <NotesCard
+        item={wishes}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        title="Пожелания на будущее"
+      />
+      <NotesCard
+        item={ideas}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        title="Идеи на будущее"
+      />
 
       <Snackbar
         open={Boolean(snack)}
