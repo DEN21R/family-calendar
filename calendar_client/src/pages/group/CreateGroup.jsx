@@ -53,7 +53,7 @@ function CreateGroup() {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
       <Paper sx={{ p: 4, width: '100%', maxWidth: 560 }}>
-        <Typography variant="h4" sx={{ mb: 1, color: '#20419c' }}>
+        <Typography variant="h4" color="logo" sx={{ mb: 1 }}>
           Создание группы
         </Typography>
         <Typography variant="body1" sx={{ mb: 3 }}>
