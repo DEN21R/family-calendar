@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { setError, setLoading, setUser } from '../../features/auth/authSlice'
 import authService from '../../services/authService'
 import { Box, Button, Typography, TextField, Alert } from '@mui/material'
+import logo from '../../assets/logo.png'
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -44,12 +45,19 @@ function Register() {
 
   return (
     <Box>
-      <Typography
-        variant="h5"
-        sx={{ mb: 3, color: '#20419c', fontWeight: 'bold' }}
-      >
-        Регистрация
-      </Typography>
+      <Box
+        component="img"
+        src={logo}
+        alt="Company logo"
+        sx={{
+          height: 100,
+          mb: 4,
+          display: 'block',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      />
+      <Typography variant="TitleAuth">Создание аккаунта</Typography>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
