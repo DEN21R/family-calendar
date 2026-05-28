@@ -6,11 +6,18 @@ import {
   sendTaskReminderEmail,
   isEmailConfigured,
 } from '../services/emailService.js'
-import { getReminderDate } from '../utils/taskReminder.js'
+import { getReminderDate, toTaskDateTime } from '../utils/taskReminder.js'
 
 async function processTask(task, now) {
   const reminderAt = getReminderDate(task)
   if (!reminderAt) {
+    return false
+  }
+
+  const dueAt = toTaskDateTime(task)
+  if (dueAt && now > dueAt) {
+    task.reminderSentAt = new Date()
+    await task.save()
     return false
   }
 
@@ -33,11 +40,15 @@ async function processTask(task, now) {
       continue
     }
 
-    await sendTaskReminderEmail({
-      task,
-      group,
-      recipient: user,
-    })
+    try {
+      await sendTaskReminderEmail({
+        task,
+        group,
+        recipient: user,
+      })
+    } catch (error) {
+      console.error(`Reminder email failed for ${user.email}: ${error.message}`)
+    }
   }
 
   task.reminderSentAt = new Date()

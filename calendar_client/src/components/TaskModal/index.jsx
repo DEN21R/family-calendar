@@ -81,13 +81,17 @@ export default function TaskModal({
       return
     }
     setError('')
+    const parsedReminder = Number(form.reminderMinutesBefore)
     await onSubmit({
       title: form.title.trim(),
       date: form.date,
       time: form.time,
       task: form.task,
       color: form.color,
-      reminderMinutesBefore: Number(form.reminderMinutesBefore) || 60,
+      reminderMinutesBefore:
+        Number.isNaN(parsedReminder) || parsedReminder < 0 ?
+          60
+        : parsedReminder,
     })
   }
   return (

@@ -16,7 +16,7 @@ import CreateGroup from './pages/group/CreateGroup'
 import GroupSettings from './pages/group/GroupSettings'
 import authService from './services/authService'
 import groupService from './services/groupService'
-import { restoreAuth } from './features/auth/authSlice'
+import { logout, restoreAuth } from './features/auth/authSlice'
 import {
   setActiveGroupId,
   setGroupInitialized,
@@ -58,7 +58,7 @@ function App() {
         }
       } catch (error) {
         console.error('Error restoring session:', error)
-        localStorage.removeItem('token')
+        dispatch(logout())
       } finally {
         dispatch(setGroupLoading(false))
         dispatch(setGroupInitialized(true))
