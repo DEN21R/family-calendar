@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { setError, setLoading, setUser } from '../../features/auth/authSlice'
 import authService from '../../services/authService'
 import { Box, Button, Typography, TextField, Alert } from '@mui/material'
+import logo from '../../assets/logo.png'
 
 function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' })
@@ -33,12 +34,19 @@ function Login() {
 
   return (
     <Box>
-      <Typography
-        variant="h5"
-        sx={{ mb: 3, color: '#20419c', fontWeight: 'bold' }}
-      >
-        Вход
-      </Typography>
+      <Box
+        component="img"
+        src={logo}
+        alt="Company logo"
+        sx={{
+          height: 100,
+          mb: 4,
+          display: 'block',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      />
+      <Typography variant="TitleAuth">Вход в аккаунт</Typography>
 
       {error && (
         <Alert severity="error" sx={{ mb: 2 }}>
@@ -73,7 +81,7 @@ function Login() {
           type="submit"
           variant="contained"
           disabled={loading}
-          sx={{ mt: 2 }}
+          sx={{ mt: 2, backgroundColor: '#0051f9' }}
         >
           {loading ? 'Загрузка...' : 'Войти'}
         </Button>
