@@ -14,6 +14,15 @@ const theme = createTheme({
     logo: {
       main: '#24223c',
     },
+    plan: {
+      main: '#FBC02D',
+    },
+    wish: {
+      main: '#388E3C',
+    },
+    idea: {
+      main: '#7B1FA2',
+    },
   },
   typography: {
     fontFamily: 'Montserrat',
