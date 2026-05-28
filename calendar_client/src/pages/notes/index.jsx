@@ -99,6 +99,10 @@ function Notes() {
       setError('Введите заголовок заметки')
       return
     }
+    if (!form.content.trim()) {
+      setError('Введите описание заметки')
+      return
+    }
 
     const payload = {
       ...form,
@@ -108,24 +112,28 @@ function Notes() {
 
     setError('')
 
-    if (editingId) {
-      const data = await updateNote(activeGroupId, editingId, payload)
-      if (data?.note) {
-        setNotes((prev) =>
-          prev.map((note) => (note._id === editingId ? data.note : note)),
-        )
+    try {
+      if (editingId) {
+        const data = await updateNote(activeGroupId, editingId, payload)
+        if (data?.note) {
+          setNotes((prev) =>
+            prev.map((note) => (note._id === editingId ? data.note : note)),
+          )
+        }
+        setSnack('Заметка обновлена')
+        resetForm()
+        return
       }
-      setSnack('Заметка обновлена')
-      resetForm()
-      return
-    }
 
-    const data = await createNote(activeGroupId, payload)
-    const created = data?.note || data
-    if (created) {
-      setNotes((prev) => [created, ...prev])
-      setSnack('Заметка добавлена')
-      resetForm()
+      const data = await createNote(activeGroupId, payload)
+      const created = data?.note || data
+      if (created) {
+        setNotes((prev) => [created, ...prev])
+        setSnack('Заметка добавлена')
+        resetForm()
+      }
+    } catch (err) {
+      setError(err?.response?.data?.error || 'Не удалось сохранить заметку')
     }
   }
 
