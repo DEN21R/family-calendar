@@ -7,6 +7,14 @@ const groupSchema = mongoose.Schema(
       required: true,
       trim: true,
     },
+    color: {
+      type: String,
+      default: '#1976D2',
+    },
+    avatarKey: {
+      type: String,
+      default: 'groups',
+    },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

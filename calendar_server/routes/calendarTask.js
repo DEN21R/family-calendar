@@ -6,11 +6,14 @@ import {
   getTasks,
   updateTask,
   deleteTask,
+  getUpcomingReminders,
 } from '../controllers/calendarTaskController.js'
 
 const calendarTaskRouter = Router()
 
 calendarTaskRouter.use(authMiddleware)
+
+calendarTaskRouter.get('/reminders/upcoming', getUpcomingReminders)
 
 calendarTaskRouter.get('/:groupId/tasks', isMember, getTasks)
 

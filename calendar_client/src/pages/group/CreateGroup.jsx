@@ -10,8 +10,18 @@ import {
   setGroups,
 } from '../../features/group/groupSlice'
 
+const GROUP_COLORS = [
+  '#1976D2',
+  '#2E7D32',
+  '#D32F2F',
+  '#F57C00',
+  '#6A1B9A',
+  '#00838F',
+]
+
 function CreateGroup() {
   const [name, setName] = useState('')
+  const [color, setColor] = useState(GROUP_COLORS[0])
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const { groups, loading, error } = useSelector((state) => state.group)
@@ -29,7 +39,10 @@ function CreateGroup() {
     dispatch(setGroupLoading(true))
 
     try {
-      const response = await groupService.createGroup({ name: groupName })
+      const response = await groupService.createGroup({
+        name: groupName,
+        color,
+      })
       const createdGroup = response?.group
 
       if (!createdGroup?._id) {
@@ -74,6 +87,29 @@ function CreateGroup() {
             fullWidth
             required
           />
+
+          <Box>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              Цвет группы
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {GROUP_COLORS.map((item) => (
+                <Box
+                  key={item}
+                  onClick={() => setColor(item)}
+                  sx={{
+                    width: 28,
+                    height: 28,
+                    borderRadius: '50%',
+                    bgcolor: item,
+                    cursor: 'pointer',
+                    border:
+                      color === item ? '2px solid #111827' : '2px solid transparent',
+                  }}
+                />
+              ))}
+            </Box>
+          </Box>
 
           {error && (
             <Typography variant="body2" sx={{ color: 'error.main' }}>

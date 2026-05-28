@@ -30,6 +30,7 @@ const emptyForm = {
   time: '',
   task: '',
   color: DEFAULT_COLOR,
+  reminderMinutesBefore: 60,
 }
 
 function toInputDate(value) {
@@ -57,6 +58,7 @@ export default function TaskModal({
         time: initialTask.time || '',
         task: initialTask.task || '',
         color: initialTask.color || DEFAULT_COLOR,
+        reminderMinutesBefore: initialTask.reminderMinutesBefore ?? 60,
       }
     : {
         ...emptyForm,
@@ -85,6 +87,7 @@ export default function TaskModal({
       time: form.time,
       task: form.task,
       color: form.color,
+      reminderMinutesBefore: Number(form.reminderMinutesBefore) || 60,
     })
   }
   return (
@@ -138,6 +141,16 @@ export default function TaskModal({
           multiline
           minRows={3}
           margin="normal"
+        />
+        <TextField
+          label="Напомнить за (минут)"
+          name="reminderMinutesBefore"
+          type="number"
+          value={form.reminderMinutesBefore}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          inputProps={{ min: 0, max: 10080 }}
         />
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" sx={{ mb: 1 }}>

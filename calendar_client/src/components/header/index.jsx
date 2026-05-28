@@ -7,16 +7,22 @@ import {
   IconButton,
   Menu,
   Divider,
+  Badge,
+  Tooltip,
+  ListItemText,
 } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Toolbar from '@mui/material/Toolbar'
 import MenuIcon from '@mui/icons-material/Menu'
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone'
 import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import logo from '../../assets/logo.png'
 import { logout } from '../../features/auth/authSlice'
 import { setActiveGroupId } from '../../features/group/groupSlice'
+import { getGroupAvatarIcon } from '../../utils/groupAvatar'
+import { getUpcomingReminders } from '../../services/reminderService'
 
 function stringToColor(string) {
   let hash = 0
@@ -35,6 +41,18 @@ function stringToColor(string) {
   return color
 }
 
+function formatDateTime(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return new Intl.DateTimeFormat('ru-RU', {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(date)
+}
+
 function Header() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -45,6 +63,32 @@ function Header() {
   const open = Boolean(anchorEl)
   const [groupAnchorEl, setGroupAnchorEl] = useState(null)
   const groupMenuOpen = Boolean(groupAnchorEl)
+  const [reminderAnchorEl, setReminderAnchorEl] = useState(null)
+  const [reminderCount, setReminderCount] = useState(0)
+  const [reminderItems, setReminderItems] = useState([])
+
+  const reminderMenuOpen = Boolean(reminderAnchorEl)
+
+  useEffect(() => {
+    if (!token) {
+      setReminderCount(0)
+      setReminderItems([])
+      return
+    }
+
+    async function loadReminders() {
+      try {
+        const data = await getUpcomingReminders(5)
+        setReminderCount(Number(data?.count) || 0)
+        setReminderItems(Array.isArray(data?.reminders) ? data.reminders : [])
+      } catch {
+        setReminderCount(0)
+        setReminderItems([])
+      }
+    }
+
+    loadReminders()
+  }, [token])
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget)
@@ -60,6 +104,24 @@ function Header() {
 
   const handleCloseGroupMenu = () => {
     setGroupAnchorEl(null)
+  }
+
+  const handleOpenReminderMenu = (event) => {
+    setReminderAnchorEl(event.currentTarget)
+
+    getUpcomingReminders(5)
+      .then((data) => {
+        setReminderCount(Number(data?.count) || 0)
+        setReminderItems(Array.isArray(data?.reminders) ? data.reminders : [])
+      })
+      .catch(() => {
+        setReminderCount(0)
+        setReminderItems([])
+      })
+  }
+
+  const handleCloseReminderMenu = () => {
+    setReminderAnchorEl(null)
   }
 
   const handleLogout = () => {
@@ -222,6 +284,19 @@ function Header() {
                         handleCloseGroupMenu()
                       }}
                     >
+                      <Avatar
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          mr: 1,
+                          bgcolor: group.color || '#1976D2',
+                        }}
+                      >
+                        {(() => {
+                          const Icon = getGroupAvatarIcon(group.avatarKey)
+                          return <Icon sx={{ fontSize: 16 }} />
+                        })()}
+                      </Avatar>
                       {group.name}
                     </MenuItem>
                   ))}
@@ -248,6 +323,19 @@ function Header() {
                         handleCloseGroupMenu()
                       }}
                     >
+                      <Avatar
+                        sx={{
+                          width: 24,
+                          height: 24,
+                          mr: 1,
+                          bgcolor: group.color || '#1976D2',
+                        }}
+                      >
+                        {(() => {
+                          const Icon = getGroupAvatarIcon(group.avatarKey)
+                          return <Icon sx={{ fontSize: 16 }} />
+                        })()}
+                      </Avatar>
                       {group.name}
                     </MenuItem>
                   ))}
@@ -259,6 +347,45 @@ function Header() {
                 >
                   {user?.name?.charAt(0).toUpperCase()}
                 </Avatar>
+
+                <Tooltip title="Напоминания">
+                  <IconButton onClick={handleOpenReminderMenu}>
+                    <Badge
+                      color="error"
+                      badgeContent={reminderCount > 99 ? '99+' : reminderCount}
+                    >
+                      <NotificationsNoneIcon />
+                    </Badge>
+                  </IconButton>
+                </Tooltip>
+
+                <Menu
+                  anchorEl={reminderAnchorEl}
+                  open={reminderMenuOpen}
+                  onClose={handleCloseReminderMenu}
+                  anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'right',
+                  }}
+                  transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                  }}
+                >
+                  {reminderItems.length ?
+                    reminderItems.map((item) => (
+                      <MenuItem
+                        key={item.taskId}
+                        onClick={handleCloseReminderMenu}
+                      >
+                        <ListItemText
+                          primary={item.title}
+                          secondary={`${item.groupName} · ${formatDateTime(item.dueAt)}`}
+                        />
+                      </MenuItem>
+                    ))
+                  : <MenuItem disabled>Скорых напоминаний нет</MenuItem>}
+                </Menu>
 
                 <Button variant="contained" onClick={handleLogout}>
                   Выйти

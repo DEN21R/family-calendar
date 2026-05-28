@@ -3,7 +3,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import ruLocale from '@fullcalendar/core/locales/ru'
 import { useSelector } from 'react-redux'
-import { Box, Typography, Button } from '@mui/material'
+import { Box, Typography, Button, Avatar } from '@mui/material'
 import { useEffect, useMemo, useState } from 'react'
 import TaskModal from '../../components/TaskModal'
 
@@ -15,6 +15,7 @@ import {
 } from '../../services/taskService'
 import styles from './styles.module.css'
 import { useNavigate } from 'react-router-dom'
+import { getGroupAvatarIcon } from '../../utils/groupAvatar'
 
 const DEFAULT_TASK_COLOR = '#1976D2'
 
@@ -36,8 +37,9 @@ function mapTaskToEvent(task) {
 
 export function Calendar() {
   const { groups, activeGroupId } = useSelector((state) => state.group)
-  const activeGroupName =
-    groups.find((group) => group._id === activeGroupId)?.name || null
+  const activeGroup =
+    groups.find((group) => group._id === activeGroupId) || null
+  const activeGroupName = activeGroup?.name || null
   const [tasks, setTasks] = useState([])
   const [modalOpen, setModalOpen] = useState(false)
   const [modalMode, setModalMode] = useState('create')
@@ -141,19 +143,35 @@ export function Calendar() {
           mb: 3,
         }}
       >
-        <Typography
-          color="primary"
-          sx={{
-            fontWeight: 500,
-            fontSize: {
-              xs: '16px',
-              sm: '20px',
-              md: '28px',
-            },
-          }}
-        >
-          {activeGroupName ? `Группа: ${activeGroupName}` : 'Мой календарь'}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          {activeGroup && (
+            <Avatar
+              sx={{
+                width: 28,
+                height: 28,
+                bgcolor: activeGroup.color || '#1976D2',
+              }}
+            >
+              {(() => {
+                const Icon = getGroupAvatarIcon(activeGroup.avatarKey)
+                return <Icon sx={{ fontSize: 18 }} />
+              })()}
+            </Avatar>
+          )}
+          <Typography
+            color="primary"
+            sx={{
+              fontWeight: 500,
+              fontSize: {
+                xs: '16px',
+                sm: '20px',
+                md: '28px',
+              },
+            }}
+          >
+            {activeGroupName ? `Группа: ${activeGroupName}` : 'Мой календарь'}
+          </Typography>
+        </Box>
         {activeGroupId && (
           <Button
             variant="outlined"

@@ -1,6 +1,17 @@
 import Group from '../models/Group.js'
 import User from '../models/User.js'
 
+const groupAvatarKeys = [
+  'groups',
+  'home',
+  'favorite',
+  'star',
+  'pets',
+  'celebration',
+]
+
+const randomFrom = (list) => list[Math.floor(Math.random() * list.length)]
+
 const groupPopulate = [
   { path: 'owner', select: 'name email' },
   { path: 'members', select: 'name email' },
@@ -11,7 +22,7 @@ const getGroupWithUsers = async (groupId) =>
 
 export const createGroup = async (req, res) => {
   try {
-    const { name } = req.body
+    const { name, color, avatarKey } = req.body
     const userId = req.user.id
 
     if (!name) {
@@ -20,6 +31,11 @@ export const createGroup = async (req, res) => {
 
     const newGroup = await Group.create({
       name,
+      color: typeof color === 'string' && color.trim() ? color : '#1976D2',
+      avatarKey:
+        typeof avatarKey === 'string' && avatarKey.trim() ?
+          avatarKey
+        : randomFrom(groupAvatarKeys),
       owner: userId,
       members: [userId],
     })

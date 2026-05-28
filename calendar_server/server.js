@@ -6,6 +6,7 @@ import authRouter from './routes/authRoutes.js'
 import groupRouter from './routes/groupRoutes.js'
 import noteRouter from './routes/noteRoutes.js'
 import cors from 'cors'
+import { startTaskReminderJob } from './jobs/taskReminderJob.js'
 
 dotenv.config()
 const app = express()
@@ -24,4 +25,5 @@ app.use('/api/groups', noteRouter)
 
 app.listen(port, () => {
   console.log(`Server is running on ${host}:${port}`)
+  startTaskReminderJob()
 })

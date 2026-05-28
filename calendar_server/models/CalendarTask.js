@@ -26,6 +26,16 @@ const calendarTaskSchema = mongoose.Schema(
     time: {
       type: String,
     },
+    reminderMinutesBefore: {
+      type: Number,
+      default: 60,
+      min: 0,
+      max: 10080,
+    },
+    reminderSentAt: {
+      type: Date,
+      default: null,
+    },
     color: {
       type: String,
       enum: TASK_COLORS,
