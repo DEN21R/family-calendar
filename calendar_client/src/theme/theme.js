@@ -60,6 +60,18 @@ const theme = createTheme({
             opacity: 0.8,
           },
         },
+        {
+          props: { variant: 'TitleAuth' },
+          style: {
+            display: 'block',
+            fontSize: '1.5rem',
+            lineHeight: 1.334,
+            marginBottom: '24px',
+            color: '#24223c',
+            fontWeight: 700,
+            textAlign: 'center',
+          },
+        },
       ],
     },
   },
