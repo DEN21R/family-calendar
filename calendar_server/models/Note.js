@@ -14,7 +14,7 @@ const noteSchema = mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ['plan', 'wish'],
+      enum: ['plan', 'wish', 'idea'],
       default: 'plan',
     },
 
