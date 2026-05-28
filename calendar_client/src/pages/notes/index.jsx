@@ -193,14 +193,42 @@ function Notes() {
         />
 
         <Select
+          sx={{
+            color:
+              form.type === 'plan' ? 'plan.main'
+              : form.type === 'wish' ? 'wish.main'
+              : 'idea.main',
+            fontWeight: 600,
+          }}
           value={form.type}
           onChange={(event) =>
             setForm((prev) => ({ ...prev, type: event.target.value }))
           }
         >
-          <MenuItem value="plan">План</MenuItem>
-          <MenuItem value="wish">Пожелание</MenuItem>
-          <MenuItem value="idea">Идея</MenuItem>
+          <MenuItem
+            value="plan"
+            sx={{
+              backgroundColor: '#fad2aa',
+            }}
+          >
+            План
+          </MenuItem>
+          <MenuItem
+            value="wish"
+            sx={{
+              backgroundColor: '#a5d6a7',
+            }}
+          >
+            Пожелание
+          </MenuItem>
+          <MenuItem
+            value="idea"
+            sx={{
+              backgroundColor: '#e6adff',
+            }}
+          >
+            Идея
+          </MenuItem>
         </Select>
 
         <TextField
