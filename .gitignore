@@ -1,2 +1,9 @@
 *.md
 smoke-check.ps1
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
