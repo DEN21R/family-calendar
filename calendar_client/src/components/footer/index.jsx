@@ -7,7 +7,7 @@ import logoAl from '../../assets/logoAl.png'
 
 const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2.5),
-  backgroundColor: '#c3cce980',
+  backgroundColor: '#c0c9e680',
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'flex-start',
