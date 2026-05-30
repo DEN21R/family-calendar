@@ -111,13 +111,23 @@ export function Calendar() {
 
     setSubmitting(true)
     try {
+      // Фикс: объединяем дату и время в локальное Date и конвертируем в UTC ISO
+      let fixedPayload = { ...payload }
+      if (payload.date && payload.time) {
+        const localDateTime = new Date(`${payload.date}T${payload.time}`)
+        fixedPayload.date = localDateTime.toISOString() // UTC
+      }
       if (modalMode === 'create') {
-        const data = await createTask(activeGroupId, payload)
+        const data = await createTask(activeGroupId, fixedPayload)
         if (data?.task) {
           setTasks((prev) => [...prev, mapTaskToEvent(data.task)])
         }
       } else if (editingTask?._id) {
-        const data = await updateTask(activeGroupId, editingTask._id, payload)
+        const data = await updateTask(
+          activeGroupId,
+          editingTask._id,
+          fixedPayload,
+        )
         if (data?.task) {
           setTasks((prev) =>
             prev.map((event) =>
