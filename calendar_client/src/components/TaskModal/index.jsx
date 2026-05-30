@@ -40,6 +40,14 @@ function toInputDate(value) {
   return date.toISOString().slice(0, 10)
 }
 
+function toInputTime(value) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  // Получаем локальное время в формате HH:MM
+  return date.toTimeString().slice(0, 5)
+}
+
 export default function TaskModal({
   open,
   onClose,
@@ -55,7 +63,7 @@ export default function TaskModal({
       {
         title: initialTask.title || '',
         date: toInputDate(initialTask.date),
-        time: initialTask.time || '',
+        time: toInputTime(initialTask.date),
         task: initialTask.task || '',
         color: initialTask.color || DEFAULT_COLOR,
         reminderMinutesBefore: initialTask.reminderMinutesBefore ?? 60,
@@ -63,6 +71,7 @@ export default function TaskModal({
     : {
         ...emptyForm,
         date: toInputDate(selectedDate),
+        time: '',
       }
 
   const [form, setForm] = useState(initialForm)
