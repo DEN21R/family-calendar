@@ -206,7 +206,7 @@ export function Calendar() {
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
-          weekends={false}
+          weekends={true}
           events={events}
           eventContent={renderEventContent}
           locales={[ruLocale]}
