@@ -20,22 +20,11 @@ export function toTaskDateTime(task) {
   if (!task?.date) {
     return null
   }
-
-  const datePart = toLocalDatePart(task.date)
-  if (!datePart) {
-    return null
-  }
-
-  const normalizedTime =
-    typeof task.time === 'string' && task.time.trim() ?
-      task.time.trim()
-    : '09:00'
-
-  const dueAt = new Date(`${datePart}T${normalizedTime}:00`)
+  // Используем только поле date (ISO-строка с датой и временем)
+  const dueAt = new Date(task.date)
   if (Number.isNaN(dueAt.getTime())) {
     return null
   }
-
   return dueAt
 }
 
