@@ -19,7 +19,6 @@ import { getGroupAvatarIcon } from '../../utils/groupAvatar'
 
 const DEFAULT_TASK_COLOR = '#1976D2'
 
-
 function mapTaskToEvent(task) {
   // Используем только поле date (ISO-строка)
   return {
