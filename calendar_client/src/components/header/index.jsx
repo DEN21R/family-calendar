@@ -71,8 +71,6 @@ function Header() {
 
   useEffect(() => {
     if (!token) {
-      setReminderCount(0)
-      setReminderItems([])
       return
     }
 
@@ -173,6 +171,7 @@ function Header() {
               src={logo}
               alt="Company logo"
               sx={{ cursor: 'pointer', height: 60 }}
+              onClick={() => navigate('/dashboard')}
             />
             <Typography
               variant="h4"
