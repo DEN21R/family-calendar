@@ -4,7 +4,8 @@ import { getReminderDate, toTaskDateTime } from '../utils/taskReminder.js'
 
 export const createTask = async (req, res) => {
   try {
-    const { title, task, date, time, color, reminderMinutesBefore } = req.body
+    const { title, task, date, time, timeZone, color, reminderMinutesBefore } =
+      req.body
     const { groupId } = req.params
 
     const userId = req.user.id
@@ -18,6 +19,7 @@ export const createTask = async (req, res) => {
       task,
       date,
       time,
+      timeZone,
       color,
       reminderMinutesBefore,
       groupId,

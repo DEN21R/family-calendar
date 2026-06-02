@@ -94,8 +94,11 @@ export function Calendar() {
 
     setSubmitting(true)
     try {
+      const browserTimeZone =
+        Intl.DateTimeFormat().resolvedOptions().timeZone || null
+
       // Фикс: объединяем дату и время в локальное Date и конвертируем в UTC ISO
-      let fixedPayload = { ...payload }
+      let fixedPayload = { ...payload, timeZone: browserTimeZone }
       if (payload.date && payload.time) {
         const localDateTime = new Date(`${payload.date}T${payload.time}`)
         fixedPayload.date = localDateTime.toISOString() // UTC

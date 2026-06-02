@@ -23,6 +23,10 @@ const calendarTaskSchema = mongoose.Schema(
     date: {
       type: Date,
     },
+    timeZone: {
+      type: String,
+      trim: true,
+    },
     time: {
       type: String,
     },

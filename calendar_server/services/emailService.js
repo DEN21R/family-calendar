@@ -38,7 +38,10 @@ export async function sendTaskReminderEmail({ task, group, recipient }) {
   }
 
   const dueAt = toTaskDateTime(task)
-  const eventDateText = formatDateTimeRu(dueAt)
+  const taskTimeZone = task.timeZone || process.env.DEFAULT_TIME_ZONE
+  const eventDateText = formatDateTimeRu(dueAt, taskTimeZone)
+  const eventDateWithZone =
+    taskTimeZone ? `${eventDateText} (${taskTimeZone})` : eventDateText
   const appUrl = process.env.APP_URL || 'http://localhost:5173'
 
   const text = [
@@ -46,7 +49,7 @@ export async function sendTaskReminderEmail({ task, group, recipient }) {
     '',
     `Напоминание о задаче в группе "${group.name}".`,
     `Задача: ${task.title}`,
-    `Когда: ${eventDateText}`,
+    `Когда: ${eventDateWithZone}`,
     task.task ? `Описание: ${task.task}` : '',
     '',
     `Открыть календарь: ${appUrl}`,
@@ -60,7 +63,7 @@ export async function sendTaskReminderEmail({ task, group, recipient }) {
       <p>Привет, ${recipient.name || 'участник'}!</p>
       <p>Напоминание о задаче в группе <strong>${group.name}</strong>.</p>
       <p><strong>Задача:</strong> ${task.title}</p>
-      <p><strong>Когда:</strong> ${eventDateText}</p>
+      <p><strong>Когда:</strong> ${eventDateWithZone}</p>
       ${task.task ? `<p><strong>Описание:</strong> ${task.task}</p>` : ''}
       <p style="margin-top: 20px;">
         <a href="${appUrl}" style="background:#0051f9;color:#fff;padding:10px 14px;text-decoration:none;border-radius:8px;">
