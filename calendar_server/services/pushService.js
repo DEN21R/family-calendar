@@ -35,14 +35,14 @@ export function isPushConfigured() {
 }
 
 function buildTaskUrl(task) {
-  const appBaseUrl = process.env.APP_URL || 'http://localhost:5173'
-  const url = new URL('/calendar', appBaseUrl)
+  const searchParams = new URLSearchParams()
 
   if (task?.groupId) {
-    url.searchParams.set('groupId', String(task.groupId))
+    searchParams.set('groupId', String(task.groupId))
   }
 
-  return url.toString()
+  const query = searchParams.toString()
+  return query ? `/calendar?${query}` : '/calendar'
 }
 
 export async function sendTaskReminderPush({ task, group, recipient }) {

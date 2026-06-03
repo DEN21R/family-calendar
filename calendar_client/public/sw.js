@@ -21,7 +21,16 @@ self.addEventListener('push', (event) => {
 self.addEventListener('notificationclick', (event) => {
   event.notification.close()
 
-  const targetUrl = event.notification.data?.url || '/calendar'
+  const targetUrlRaw = event.notification.data?.url || '/calendar'
+  const appOrigin = self.location.origin
+
+  function toAppUrl(base, target) {
+    try {
+      return new URL(target, base).toString()
+    } catch {
+      return new URL('/calendar', base).toString()
+    }
+  }
 
   event.waitUntil(
     self.clients
@@ -29,13 +38,14 @@ self.addEventListener('notificationclick', (event) => {
       .then((windowClients) => {
         for (const client of windowClients) {
           if ('focus' in client) {
+            const targetUrl = toAppUrl(client.url || appOrigin, targetUrlRaw)
             client.navigate(targetUrl)
             return client.focus()
           }
         }
 
         if (self.clients.openWindow) {
-          return self.clients.openWindow(targetUrl)
+          return self.clients.openWindow(toAppUrl(appOrigin, targetUrlRaw))
         }
 
         return null
