@@ -125,14 +125,17 @@ export async function disablePush() {
     return
   }
 
-  const registration = await navigator.serviceWorker.getRegistration('/sw.js')
+  const registration = await getServiceWorkerRegistration()
   const subscription = await registration?.pushManager.getSubscription()
 
   if (subscription) {
-    await apiClient.delete('/push/subscriptions', {
-      data: { endpoint: subscription.endpoint },
-    })
-    await subscription.unsubscribe()
+    try {
+      await apiClient.delete('/push/subscriptions', {
+        data: { endpoint: subscription.endpoint },
+      })
+    } finally {
+      await subscription.unsubscribe()
+    }
   }
 
   await apiClient.put('/push/preferences', { pushEnabled: false })

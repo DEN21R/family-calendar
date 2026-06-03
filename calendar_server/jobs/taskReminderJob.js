@@ -39,7 +39,11 @@ async function processTask(task, now) {
     { name: 1, email: 1, pushEnabled: 1 },
   )
 
+  let deliveredCount = 0
+
   for (const user of users) {
+    let userDelivered = false
+
     if (user.email) {
       try {
         await sendTaskReminderEmail({
@@ -47,6 +51,7 @@ async function processTask(task, now) {
           group,
           recipient: user,
         })
+        userDelivered = true
       } catch (error) {
         console.error(
           `Reminder email failed for ${user.email}: ${error.message}`,
@@ -56,17 +61,32 @@ async function processTask(task, now) {
 
     if (user.pushEnabled !== false) {
       try {
-        await sendTaskReminderPush({
+        const pushResult = await sendTaskReminderPush({
           task,
           group,
           recipient: user,
         })
+
+        if (pushResult?.sent > 0) {
+          userDelivered = true
+        }
       } catch (error) {
         console.error(
           `Reminder push failed for user ${user._id}: ${error.message}`,
         )
       }
     }
+
+    if (userDelivered) {
+      deliveredCount += 1
+    }
+  }
+
+  if (deliveredCount === 0) {
+    console.warn(
+      `Reminder delivery skipped for task ${task._id}: no successful channels`,
+    )
+    return false
   }
 
   task.reminderSentAt = new Date()
