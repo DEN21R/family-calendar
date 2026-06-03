@@ -1,12 +1,38 @@
 import apiClient from '../api/axios'
 
-function isPushSupported() {
+function isIosDevice() {
+  return /iPad|iPhone|iPod/i.test(navigator.userAgent)
+}
+
+function isStandaloneDisplayMode() {
   return (
-    typeof window !== 'undefined' &&
-    window.isSecureContext &&
-    'serviceWorker' in navigator &&
-    'Notification' in window
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
   )
+}
+
+export function getLocalPushSupportInfo() {
+  if (typeof window === 'undefined') {
+    return { supported: false, reason: 'no_window' }
+  }
+
+  if (!window.isSecureContext) {
+    return { supported: false, reason: 'not_secure_context' }
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    return { supported: false, reason: 'no_service_worker' }
+  }
+
+  if (!('Notification' in window)) {
+    return { supported: false, reason: 'no_notification_api' }
+  }
+
+  if (isIosDevice() && !isStandaloneDisplayMode()) {
+    return { supported: false, reason: 'ios_not_standalone' }
+  }
+
+  return { supported: true, reason: null }
 }
 
 function urlBase64ToUint8Array(base64String) {
@@ -27,11 +53,13 @@ async function getServiceWorkerRegistration() {
 }
 
 export async function getPushStatus() {
-  if (!isPushSupported()) {
+  const local = getLocalPushSupportInfo()
+  if (!local.supported) {
     return {
       supported: false,
       browserSupported: false,
       serverSupported: false,
+      reason: local.reason,
       pushEnabled: false,
       hasSubscription: false,
       permission: 'denied',
@@ -45,6 +73,7 @@ export async function getPushStatus() {
     supported: serverSupported,
     browserSupported: true,
     serverSupported,
+    reason: null,
     pushEnabled: data.pushEnabled,
     hasSubscription: data.hasSubscription,
     permission: Notification.permission,
@@ -52,7 +81,8 @@ export async function getPushStatus() {
 }
 
 export async function enablePush() {
-  if (!isPushSupported()) {
+  const local = getLocalPushSupportInfo()
+  if (!local.supported) {
     throw new Error('Push is not supported in this browser')
   }
 
@@ -86,7 +116,8 @@ export async function enablePush() {
 }
 
 export async function disablePush() {
-  if (!isPushSupported()) {
+  const local = getLocalPushSupportInfo()
+  if (!local.supported) {
     return
   }
 
