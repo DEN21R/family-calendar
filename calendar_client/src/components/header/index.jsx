@@ -23,6 +23,11 @@ import { logout } from '../../features/auth/authSlice'
 import { setActiveGroupId } from '../../features/group/groupSlice'
 import { getGroupAvatarIcon } from '../../utils/groupAvatar'
 import { getUpcomingReminders } from '../../services/reminderService'
+import {
+  disablePush,
+  enablePush,
+  getPushStatus,
+} from '../../services/pushService'
 
 function stringToColor(string) {
   let hash = 0
@@ -66,6 +71,9 @@ function Header() {
   const [reminderAnchorEl, setReminderAnchorEl] = useState(null)
   const [reminderCount, setReminderCount] = useState(0)
   const [reminderItems, setReminderItems] = useState([])
+  const [pushEnabled, setPushEnabled] = useState(false)
+  const [pushSupported, setPushSupported] = useState(false)
+  const [pushLoading, setPushLoading] = useState(false)
 
   const reminderMenuOpen = Boolean(reminderAnchorEl)
 
@@ -87,6 +95,47 @@ function Header() {
 
     loadReminders()
   }, [token])
+
+  useEffect(() => {
+    if (!token) {
+      return
+    }
+
+    getPushStatus()
+      .then((status) => {
+        setPushSupported(status.supported)
+        setPushEnabled(Boolean(status.pushEnabled && status.hasSubscription))
+      })
+      .catch(() => {
+        setPushSupported(false)
+        setPushEnabled(false)
+      })
+  }, [token])
+
+  const handleTogglePush = async () => {
+    if (!token || pushLoading) {
+      return
+    }
+
+    setPushLoading(true)
+    try {
+      if (pushEnabled) {
+        await disablePush()
+        setPushEnabled(false)
+      } else {
+        await enablePush()
+        setPushEnabled(true)
+        setPushSupported(true)
+      }
+    } catch (error) {
+      window.alert(
+        error?.message ||
+          'Не удалось изменить настройки push-уведомлений. Проверьте разрешение браузера.',
+      )
+    } finally {
+      setPushLoading(false)
+    }
+  }
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget)
@@ -385,6 +434,19 @@ function Header() {
                     ))
                   : <MenuItem disabled>Скорых напоминаний нет</MenuItem>}
                 </Menu>
+
+                <Button
+                  variant={pushEnabled ? 'contained' : 'outlined'}
+                  size="small"
+                  disabled={!pushSupported || pushLoading}
+                  onClick={handleTogglePush}
+                  sx={{ textTransform: 'none' }}
+                >
+                  {pushLoading ?
+                    '...' : pushEnabled ?
+                      'Push: вкл' :
+                      'Push: выкл'}
+                </Button>
 
                 <Button variant="contained" onClick={handleLogout}>
                   Выйти

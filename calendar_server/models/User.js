@@ -19,6 +19,10 @@ const userSchema = mongoose.Schema({
     required: true,
     minlength: 4,
   },
+  pushEnabled: {
+    type: Boolean,
+    default: true,
+  },
 })
 
 userSchema.set('timestamps', true)

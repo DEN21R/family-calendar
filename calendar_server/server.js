@@ -5,6 +5,7 @@ import calendarTaskRouter from './routes/calendarTask.js'
 import authRouter from './routes/authRoutes.js'
 import groupRouter from './routes/groupRoutes.js'
 import noteRouter from './routes/noteRoutes.js'
+import pushRouter from './routes/pushRoutes.js'
 import cors from 'cors'
 import { startTaskReminderJob } from './jobs/taskReminderJob.js'
 
@@ -19,6 +20,7 @@ const mdb = process.env.MONGO_URI || 'URL'
 ConnectDB(mdb)
 
 app.use('/api/auth', authRouter)
+app.use('/api/push', pushRouter)
 app.use('/api/groups', groupRouter)
 app.use('/api/groups', calendarTaskRouter)
 app.use('/api/groups', noteRouter)

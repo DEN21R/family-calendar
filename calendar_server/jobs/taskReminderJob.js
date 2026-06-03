@@ -6,6 +6,7 @@ import {
   sendTaskReminderEmail,
   isEmailConfigured,
 } from '../services/emailService.js'
+import { isPushConfigured, sendTaskReminderPush } from '../services/pushService.js'
 import { getReminderDate, toTaskDateTime } from '../utils/taskReminder.js'
 
 async function processTask(task, now) {
@@ -32,22 +33,32 @@ async function processTask(task, now) {
 
   const users = await User.find(
     { _id: { $in: group.members } },
-    { name: 1, email: 1 },
+    { name: 1, email: 1, pushEnabled: 1 },
   )
 
   for (const user of users) {
-    if (!user.email) {
-      continue
+    if (user.email) {
+      try {
+        await sendTaskReminderEmail({
+          task,
+          group,
+          recipient: user,
+        })
+      } catch (error) {
+        console.error(`Reminder email failed for ${user.email}: ${error.message}`)
+      }
     }
 
-    try {
-      await sendTaskReminderEmail({
-        task,
-        group,
-        recipient: user,
-      })
-    } catch (error) {
-      console.error(`Reminder email failed for ${user.email}: ${error.message}`)
+    if (user.pushEnabled !== false) {
+      try {
+        await sendTaskReminderPush({
+          task,
+          group,
+          recipient: user,
+        })
+      } catch (error) {
+        console.error(`Reminder push failed for user ${user._id}: ${error.message}`)
+      }
     }
   }
 
@@ -57,8 +68,11 @@ async function processTask(task, now) {
 }
 
 export function startTaskReminderJob() {
-  if (!isEmailConfigured()) {
-    console.log('Reminder job is disabled: SMTP env is not configured')
+  const emailReady = isEmailConfigured()
+  const pushReady = isPushConfigured()
+
+  if (!emailReady && !pushReady) {
+    console.log('Reminder job is disabled: no delivery channel is configured')
     return null
   }
 
