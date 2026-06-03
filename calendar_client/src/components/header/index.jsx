@@ -72,7 +72,8 @@ function Header() {
   const [reminderCount, setReminderCount] = useState(0)
   const [reminderItems, setReminderItems] = useState([])
   const [pushEnabled, setPushEnabled] = useState(false)
-  const [pushSupported, setPushSupported] = useState(false)
+  const [browserPushSupported, setBrowserPushSupported] = useState(false)
+  const [serverPushSupported, setServerPushSupported] = useState(false)
   const [pushLoading, setPushLoading] = useState(false)
 
   const reminderMenuOpen = Boolean(reminderAnchorEl)
@@ -103,17 +104,33 @@ function Header() {
 
     getPushStatus()
       .then((status) => {
-        setPushSupported(status.supported)
+        setBrowserPushSupported(Boolean(status.browserSupported))
+        setServerPushSupported(Boolean(status.serverSupported))
         setPushEnabled(Boolean(status.pushEnabled && status.hasSubscription))
       })
       .catch(() => {
-        setPushSupported(false)
+        setBrowserPushSupported(false)
+        setServerPushSupported(false)
         setPushEnabled(false)
       })
   }, [token])
 
   const handleTogglePush = async () => {
     if (!token || pushLoading) {
+      return
+    }
+
+    if (!browserPushSupported) {
+      window.alert(
+        'Push недоступен в этом браузере/режиме. На iPhone push работает в Safari только для сайта, добавленного на экран Домой (PWA).',
+      )
+      return
+    }
+
+    if (!serverPushSupported && !pushEnabled) {
+      window.alert(
+        'Push не настроен на сервере (VAPID). Нужно задать VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY и VAPID_SUBJECT и перезапустить backend.',
+      )
       return
     }
 
@@ -125,7 +142,8 @@ function Header() {
       } else {
         await enablePush()
         setPushEnabled(true)
-        setPushSupported(true)
+        setBrowserPushSupported(true)
+        setServerPushSupported(true)
       }
     } catch (error) {
       window.alert(
@@ -438,7 +456,7 @@ function Header() {
                 <Button
                   variant={pushEnabled ? 'contained' : 'outlined'}
                   size="small"
-                  disabled={!pushSupported || pushLoading}
+                  disabled={pushLoading}
                   onClick={handleTogglePush}
                   sx={{ textTransform: 'none' }}
                 >
