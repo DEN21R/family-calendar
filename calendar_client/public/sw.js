@@ -26,17 +26,7 @@ self.addEventListener('notificationclick', (event) => {
 
   function toAppUrl(base, target) {
     try {
-      const parsed = new URL(target, base)
-
-      // Always keep user inside this PWA origin.
-      if (parsed.origin !== appOrigin) {
-        return new URL(
-          `${parsed.pathname}${parsed.search}${parsed.hash}`,
-          appOrigin,
-        ).toString()
-      }
-
-      return parsed.toString()
+      return new URL(target, base).toString()
     } catch {
       return new URL('/calendar', base).toString()
     }
@@ -49,10 +39,8 @@ self.addEventListener('notificationclick', (event) => {
         for (const client of windowClients) {
           if ('focus' in client) {
             const targetUrl = toAppUrl(client.url || appOrigin, targetUrlRaw)
-            return client
-              .navigate(targetUrl)
-              .then(() => client.focus())
-              .catch(() => client.focus())
+            client.navigate(targetUrl)
+            return client.focus()
           }
         }
 
