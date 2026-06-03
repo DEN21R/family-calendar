@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { setError, setLoading, setUser } from '../../features/auth/authSlice'
 import authService from '../../services/authService'
 import { Box, Button, Typography, TextField, Alert } from '@mui/material'
@@ -11,6 +11,7 @@ function Login() {
   const { loading, error } = useSelector((state) => state.auth)
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -26,7 +27,9 @@ function Login() {
         formData.password,
       )
       dispatch(setUser(response))
-      navigate('/calendar')
+      const searchParams = new URLSearchParams(location.search)
+      const redirectTo = searchParams.get('redirect') || '/calendar'
+      navigate(redirectTo, { replace: true })
     } catch (err) {
       dispatch(setError(err.response?.data?.message || 'Ошибка входа'))
     }

@@ -2,7 +2,7 @@ import './App.css'
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Calendar } from './pages/calendar'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -28,6 +28,9 @@ import { Box } from '@mui/material'
 function App() {
   const dispatch = useDispatch()
   const token = useSelector((state) => state.auth.token)
+  const activeGroupId = useSelector((state) => state.group.activeGroupId)
+  const groups = useSelector((state) => state.group.groups)
+  const location = useLocation()
 
   useEffect(() => {
     if (!token) {
@@ -46,10 +49,16 @@ function App() {
         const groups = response?.groups || []
         dispatch(setGroups(groups))
 
+        const queryGroupId = new URLSearchParams(location.search).get('groupId')
+        const hasQueryGroup =
+          queryGroupId && groups.some((group) => group._id === queryGroupId)
+
         const savedGroupId = localStorage.getItem('activeGroupId')
         const hasGroup =
           savedGroupId && groups.some((g) => g._id === savedGroupId)
-        if (hasGroup) {
+        if (hasQueryGroup) {
+          dispatch(setActiveGroupId(queryGroupId))
+        } else if (hasGroup) {
           dispatch(setActiveGroupId(savedGroupId))
         } else if (groups.length > 0) {
           dispatch(setActiveGroupId(groups[0]._id))
@@ -67,6 +76,22 @@ function App() {
 
     restoreSession()
   }, [dispatch, token])
+
+  useEffect(() => {
+    if (!token) {
+      return
+    }
+
+    const queryGroupId = new URLSearchParams(location.search).get('groupId')
+    if (!queryGroupId) {
+      return
+    }
+
+    const hasQueryGroup = groups.some((group) => group._id === queryGroupId)
+    if (hasQueryGroup && queryGroupId !== activeGroupId) {
+      dispatch(setActiveGroupId(queryGroupId))
+    }
+  }, [activeGroupId, dispatch, groups, location.search, token])
 
   return (
     <Box className="app-shell">
