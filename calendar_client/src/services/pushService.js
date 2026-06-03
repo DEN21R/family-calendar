@@ -68,6 +68,9 @@ export async function getPushStatus() {
 
   const { data } = await apiClient.get('/push/me')
   const serverSupported = Boolean(data.pushSupportedOnServer)
+  const registration = await getServiceWorkerRegistration()
+  const localSubscription = await registration.pushManager?.getSubscription()
+  const hasLocalSubscription = Boolean(localSubscription)
 
   return {
     supported: serverSupported,
@@ -75,7 +78,8 @@ export async function getPushStatus() {
     serverSupported,
     reason: null,
     pushEnabled: data.pushEnabled,
-    hasSubscription: data.hasSubscription,
+    hasSubscription: hasLocalSubscription,
+    hasAnySubscription: Boolean(data.hasSubscription),
     permission: Notification.permission,
   }
 }
