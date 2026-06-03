@@ -443,9 +443,10 @@ function Header() {
                   sx={{ textTransform: 'none' }}
                 >
                   {pushLoading ?
-                    '...' : pushEnabled ?
-                      'Push: вкл' :
-                      'Push: выкл'}
+                    '...'
+                  : pushEnabled ?
+                    'Push: вкл'
+                  : 'Push: выкл'}
                 </Button>
 
                 <Button variant="contained" onClick={handleLogout}>

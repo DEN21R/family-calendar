@@ -37,8 +37,14 @@ export async function subscribePush(req, res) {
     const userId = req.user.id
     const { subscription, userAgent } = req.body
 
-    if (!subscription?.endpoint || !subscription?.keys?.p256dh || !subscription?.keys?.auth) {
-      return res.status(400).json({ error: 'Invalid push subscription payload' })
+    if (
+      !subscription?.endpoint ||
+      !subscription?.keys?.p256dh ||
+      !subscription?.keys?.auth
+    ) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid push subscription payload' })
     }
 
     const doc = await PushSubscription.findOneAndUpdate(
@@ -81,7 +87,9 @@ export async function unsubscribePush(req, res) {
 
     return res.status(200).json({ message: 'Push subscription disabled' })
   } catch (error) {
-    return res.status(400).json({ error: 'Failed to disable push subscription' })
+    return res
+      .status(400)
+      .json({ error: 'Failed to disable push subscription' })
   }
 }
 

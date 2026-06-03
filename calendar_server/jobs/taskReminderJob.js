@@ -6,7 +6,10 @@ import {
   sendTaskReminderEmail,
   isEmailConfigured,
 } from '../services/emailService.js'
-import { isPushConfigured, sendTaskReminderPush } from '../services/pushService.js'
+import {
+  isPushConfigured,
+  sendTaskReminderPush,
+} from '../services/pushService.js'
 import { getReminderDate, toTaskDateTime } from '../utils/taskReminder.js'
 
 async function processTask(task, now) {
@@ -45,7 +48,9 @@ async function processTask(task, now) {
           recipient: user,
         })
       } catch (error) {
-        console.error(`Reminder email failed for ${user.email}: ${error.message}`)
+        console.error(
+          `Reminder email failed for ${user.email}: ${error.message}`,
+        )
       }
     }
 
@@ -57,7 +62,9 @@ async function processTask(task, now) {
           recipient: user,
         })
       } catch (error) {
-        console.error(`Reminder push failed for user ${user._id}: ${error.message}`)
+        console.error(
+          `Reminder push failed for user ${user._id}: ${error.message}`,
+        )
       }
     }
   }
