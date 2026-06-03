@@ -488,8 +488,8 @@ function Header() {
                   {pushLoading ?
                     '...'
                   : pushEnabled ?
-                    'Push: вкл'
-                  : 'Push: выкл'}
+                    'Отключить Push'
+                  : 'Включить Push'}
                 </Button>
 
                 <Button variant="contained" onClick={handleLogout}>
