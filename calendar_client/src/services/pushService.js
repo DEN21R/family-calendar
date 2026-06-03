@@ -71,6 +71,17 @@ export async function getPushStatus() {
   const registration = await getServiceWorkerRegistration()
   const localSubscription = await registration.pushManager?.getSubscription()
   const hasLocalSubscription = Boolean(localSubscription)
+  let hasServerSubscription = Boolean(data.hasSubscription)
+
+  // Self-heal: if this device has a local subscription but server lost it,
+  // re-register endpoint so reminders can be delivered again.
+  if (hasLocalSubscription && !hasServerSubscription) {
+    await apiClient.post('/push/subscriptions', {
+      subscription: localSubscription,
+      userAgent: navigator.userAgent,
+    })
+    hasServerSubscription = true
+  }
 
   return {
     supported: serverSupported,
@@ -78,8 +89,9 @@ export async function getPushStatus() {
     serverSupported,
     reason: null,
     pushEnabled: data.pushEnabled,
-    hasSubscription: hasLocalSubscription,
-    hasAnySubscription: Boolean(data.hasSubscription),
+    hasSubscription: hasLocalSubscription && hasServerSubscription,
+    hasLocalSubscription,
+    hasServerSubscription,
     permission: Notification.permission,
   }
 }
