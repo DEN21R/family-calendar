@@ -30,6 +30,8 @@ export async function getPushStatus() {
   if (!isPushSupported()) {
     return {
       supported: false,
+      browserSupported: false,
+      serverSupported: false,
       pushEnabled: false,
       hasSubscription: false,
       permission: 'denied',
@@ -37,9 +39,12 @@ export async function getPushStatus() {
   }
 
   const { data } = await apiClient.get('/push/me')
+  const serverSupported = Boolean(data.pushSupportedOnServer)
 
   return {
-    supported: Boolean(data.pushSupportedOnServer),
+    supported: serverSupported,
+    browserSupported: true,
+    serverSupported,
     pushEnabled: data.pushEnabled,
     hasSubscription: data.hasSubscription,
     permission: Notification.permission,
