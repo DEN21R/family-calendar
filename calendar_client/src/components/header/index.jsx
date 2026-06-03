@@ -136,8 +136,18 @@ function Header() {
         )
       } else if (pushSupportReason === 'not_secure_context') {
         window.alert('Push работает только по HTTPS.')
+      } else if (pushSupportReason === 'no_notification_api') {
+        window.alert(
+          'В этом браузере/режиме нет поддержки Notification API. На iPhone используйте Safari и запускайте сайт с иконки на Домашнем экране.',
+        )
+      } else if (pushSupportReason === 'no_service_worker') {
+        window.alert(
+          'В этом браузере/режиме нет поддержки Service Worker. Для iPhone нужен Safari (добавить на Домой).',
+        )
       } else {
-        window.alert('Push недоступен в этом браузере/режиме.')
+        window.alert(
+          `Push недоступен в этом браузере/режиме (reason: ${pushSupportReason || 'unknown'}).`,
+        )
       }
       return
     }
