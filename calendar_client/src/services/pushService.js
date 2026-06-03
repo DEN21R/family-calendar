@@ -3,8 +3,8 @@ import apiClient from '../api/axios'
 function isPushSupported() {
   return (
     typeof window !== 'undefined' &&
+    window.isSecureContext &&
     'serviceWorker' in navigator &&
-    'PushManager' in window &&
     'Notification' in window
   )
 }
@@ -64,6 +64,10 @@ export async function enablePush() {
   }
 
   const registration = await getServiceWorkerRegistration()
+  if (!registration.pushManager) {
+    throw new Error('PushManager is unavailable in this browser context')
+  }
+
   let subscription = await registration.pushManager.getSubscription()
 
   if (!subscription) {
