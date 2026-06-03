@@ -26,6 +26,7 @@ import { getUpcomingReminders } from '../../services/reminderService'
 import {
   disablePush,
   enablePush,
+  getLocalPushSupportInfo,
   getPushStatus,
 } from '../../services/pushService'
 
@@ -72,8 +73,13 @@ function Header() {
   const [reminderCount, setReminderCount] = useState(0)
   const [reminderItems, setReminderItems] = useState([])
   const [pushEnabled, setPushEnabled] = useState(false)
-  const [browserPushSupported, setBrowserPushSupported] = useState(false)
+  const [browserPushSupported, setBrowserPushSupported] = useState(
+    () => getLocalPushSupportInfo().supported,
+  )
   const [serverPushSupported, setServerPushSupported] = useState(false)
+  const [pushSupportReason, setPushSupportReason] = useState(
+    () => getLocalPushSupportInfo().reason,
+  )
   const [pushLoading, setPushLoading] = useState(false)
 
   const reminderMenuOpen = Boolean(reminderAnchorEl)
@@ -106,11 +112,14 @@ function Header() {
       .then((status) => {
         setBrowserPushSupported(Boolean(status.browserSupported))
         setServerPushSupported(Boolean(status.serverSupported))
+        setPushSupportReason(status.reason || null)
         setPushEnabled(Boolean(status.pushEnabled && status.hasSubscription))
       })
       .catch(() => {
-        setBrowserPushSupported(false)
+        const local = getLocalPushSupportInfo()
+        setBrowserPushSupported(local.supported)
         setServerPushSupported(false)
+        setPushSupportReason(local.reason)
         setPushEnabled(false)
       })
   }, [token])
@@ -121,9 +130,15 @@ function Header() {
     }
 
     if (!browserPushSupported) {
-      window.alert(
-        'Push недоступен в этом браузере/режиме. На iPhone push работает в Safari только для сайта, добавленного на экран Домой (PWA).',
-      )
+      if (pushSupportReason === 'ios_not_standalone') {
+        window.alert(
+          'На iPhone откройте приложение с иконки на Домашнем экране (Add to Home Screen). В обычной вкладке Safari push не работает.',
+        )
+      } else if (pushSupportReason === 'not_secure_context') {
+        window.alert('Push работает только по HTTPS.')
+      } else {
+        window.alert('Push недоступен в этом браузере/режиме.')
+      }
       return
     }
 
