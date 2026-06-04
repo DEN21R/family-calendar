@@ -129,6 +129,38 @@ function Header() {
   }, [])
 
   useEffect(() => {
+    if (!navigator.serviceWorker) {
+      return undefined
+    }
+
+    const handleMessage = (event) => {
+      const messageType = event.data?.type
+      const pushDataUrl = event.data?.url
+
+      if (messageType !== 'push-notification-click' || !pushDataUrl) {
+        return
+      }
+
+      try {
+        localStorage.setItem('fc_last_push_data_url', pushDataUrl)
+      } catch {
+        // Ignore storage errors in diagnostics helper.
+      }
+
+      setPushDebug((current) => ({
+        ...current,
+        lastPushDataUrl: pushDataUrl,
+      }))
+    }
+
+    navigator.serviceWorker.addEventListener('message', handleMessage)
+
+    return () => {
+      navigator.serviceWorker.removeEventListener('message', handleMessage)
+    }
+  }, [])
+
+  useEffect(() => {
     if (!token) {
       return
     }

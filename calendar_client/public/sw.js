@@ -24,6 +24,17 @@ self.addEventListener('notificationclick', (event) => {
   const targetUrlRaw = event.notification.data?.url || '/calendar'
   const appOrigin = self.location.origin
 
+  function notifyClient(client, target) {
+    if (!client?.postMessage) {
+      return
+    }
+
+    client.postMessage({
+      type: 'push-notification-click',
+      url: target,
+    })
+  }
+
   function toAppUrl(base, target) {
     try {
       const url = new URL(target, base)
@@ -43,6 +54,7 @@ self.addEventListener('notificationclick', (event) => {
         for (const client of windowClients) {
           if ('focus' in client) {
             const targetUrl = toAppUrl(client.url || appOrigin, targetUrlRaw)
+            notifyClient(client, targetUrlRaw)
             client.navigate(targetUrl)
             return client.focus()
           }
