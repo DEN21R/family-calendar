@@ -85,6 +85,7 @@ function Header() {
   )
   const [pushLoading, setPushLoading] = useState(false)
   const [pushDebugOpen, setPushDebugOpen] = useState(false)
+  const [pushDebugCopied, setPushDebugCopied] = useState(false)
   const [pushDebug, setPushDebug] = useState({
     origin: '',
     hasLocalSubscription: false,
@@ -212,6 +213,41 @@ function Header() {
     }
 
     setPushDebugOpen(true)
+  }
+
+  const buildPushDebugText = () => {
+    return [
+      `Origin: ${pushDebug.origin || '-'}`,
+      `Local subscription: ${pushDebug.hasLocalSubscription ? 'true' : 'false'}`,
+      `Server subscription: ${pushDebug.hasServerSubscription ? 'true' : 'false'}`,
+      `Notification permission: ${pushDebug.permission}`,
+      `Last push data URL: ${pushDebug.lastPushDataUrl}`,
+    ].join('\n')
+  }
+
+  const handleCopyPushDebug = async () => {
+    const debugText = buildPushDebugText()
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(debugText)
+      } else {
+        const textarea = document.createElement('textarea')
+        textarea.value = debugText
+        textarea.setAttribute('readonly', '')
+        textarea.style.position = 'fixed'
+        textarea.style.opacity = '0'
+        document.body.appendChild(textarea)
+        textarea.select()
+        document.execCommand('copy')
+        document.body.removeChild(textarea)
+      }
+
+      setPushDebugCopied(true)
+      window.setTimeout(() => setPushDebugCopied(false), 1500)
+    } catch {
+      window.alert('Не удалось скопировать автоматически. Скопируй текст вручную.')
+    }
   }
 
   const handleTogglePush = async () => {
@@ -597,7 +633,10 @@ function Header() {
 
                 <Dialog
                   open={pushDebugOpen}
-                  onClose={() => setPushDebugOpen(false)}
+                  onClose={() => {
+                    setPushDebugOpen(false)
+                    setPushDebugCopied(false)
+                  }}
                   fullWidth
                   maxWidth="sm"
                 >
@@ -618,6 +657,20 @@ function Header() {
                     <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
                       Last push data URL: {pushDebug.lastPushDataUrl}
                     </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
+                      <Button size="small" onClick={handleCopyPushDebug}>
+                        {pushDebugCopied ? 'Скопировано' : 'Скопировать debug'}
+                      </Button>
+                      <Button
+                        size="small"
+                        onClick={() => {
+                          setPushDebugOpen(false)
+                          setPushDebugCopied(false)
+                        }}
+                      >
+                        Закрыть
+                      </Button>
+                    </Box>
                   </DialogContent>
                 </Dialog>
               </>
