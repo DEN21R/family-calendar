@@ -24,30 +24,15 @@ self.addEventListener('notificationclick', (event) => {
   const targetUrlRaw = event.notification.data?.url || '/calendar'
   const appOrigin = self.location.origin
 
-  function notifyClient(client, target) {
-    if (!client?.postMessage) {
-      return
-    }
-
-    client.postMessage({
-      type: 'push-notification-click',
-      url: target,
-    })
-  }
-
   function toAppUrl(base, target) {
     try {
       const parsed = new URL(target, base)
-      const safeUrl = new URL(
+      return new URL(
         `${parsed.pathname}${parsed.search}${parsed.hash}`,
         appOrigin,
-      )
-      safeUrl.searchParams.set('_pushDataUrl', target)
-      return safeUrl.toString()
+      ).toString()
     } catch {
-      const fallback = new URL('/calendar', base)
-      fallback.searchParams.set('_pushDataUrl', target)
-      return fallback.toString()
+      return new URL('/calendar', appOrigin).toString()
     }
   }
 
@@ -58,7 +43,6 @@ self.addEventListener('notificationclick', (event) => {
         for (const client of windowClients) {
           if ('focus' in client) {
             const targetUrl = toAppUrl(client.url || appOrigin, targetUrlRaw)
-            notifyClient(client, targetUrlRaw)
             client.navigate(targetUrl)
             return client.focus()
           }

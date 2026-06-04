@@ -10,9 +10,6 @@ import {
   Badge,
   Tooltip,
   ListItemText,
-  Dialog,
-  DialogTitle,
-  DialogContent,
 } from '@mui/material'
 import Avatar from '@mui/material/Avatar'
 import Toolbar from '@mui/material/Toolbar'
@@ -84,81 +81,8 @@ function Header() {
     () => getLocalPushSupportInfo().reason,
   )
   const [pushLoading, setPushLoading] = useState(false)
-  const [pushDebugOpen, setPushDebugOpen] = useState(false)
-  const [pushDebugCopied, setPushDebugCopied] = useState(false)
-  const [pushDebug, setPushDebug] = useState({
-    origin: '',
-    hasLocalSubscription: false,
-    hasServerSubscription: false,
-    permission: 'default',
-    lastPushDataUrl: '-',
-  })
 
   const reminderMenuOpen = Boolean(reminderAnchorEl)
-
-  const getLastPushDataUrl = () => {
-    try {
-      return localStorage.getItem('fc_last_push_data_url') || '-'
-    } catch {
-      return '-'
-    }
-  }
-
-  const saveLastPushDataUrlFromQuery = () => {
-    try {
-      const current = new URL(window.location.href)
-      const pushDataUrl = current.searchParams.get('_pushDataUrl')
-      if (!pushDataUrl) {
-        return
-      }
-
-      localStorage.setItem('fc_last_push_data_url', pushDataUrl)
-      current.searchParams.delete('_pushDataUrl')
-      window.history.replaceState(
-        {},
-        '',
-        `${current.pathname}${current.search}${current.hash}`,
-      )
-    } catch {
-      // Ignore parse errors in diagnostics helper.
-    }
-  }
-
-  useEffect(() => {
-    saveLastPushDataUrlFromQuery()
-  }, [])
-
-  useEffect(() => {
-    if (!navigator.serviceWorker) {
-      return undefined
-    }
-
-    const handleMessage = (event) => {
-      const messageType = event.data?.type
-      const pushDataUrl = event.data?.url
-
-      if (messageType !== 'push-notification-click' || !pushDataUrl) {
-        return
-      }
-
-      try {
-        localStorage.setItem('fc_last_push_data_url', pushDataUrl)
-      } catch {
-        // Ignore storage errors in diagnostics helper.
-      }
-
-      setPushDebug((current) => ({
-        ...current,
-        lastPushDataUrl: pushDataUrl,
-      }))
-    }
-
-    navigator.serviceWorker.addEventListener('message', handleMessage)
-
-    return () => {
-      navigator.serviceWorker.removeEventListener('message', handleMessage)
-    }
-  }, [])
 
   useEffect(() => {
     if (!token) {
@@ -190,15 +114,6 @@ function Header() {
         setServerPushSupported(Boolean(status.serverSupported))
         setPushSupportReason(status.reason || null)
         setPushEnabled(Boolean(status.pushEnabled && status.hasSubscription))
-        setPushDebug({
-          origin: window.location.origin,
-          hasLocalSubscription: Boolean(status?.hasLocalSubscription),
-          hasServerSubscription: Boolean(status?.hasServerSubscription),
-          permission:
-            status?.permission ||
-            (typeof Notification !== 'undefined' ? Notification.permission : 'n/a'),
-          lastPushDataUrl: getLastPushDataUrl(),
-        })
       })
       .catch(() => {
         const local = getLocalPushSupportInfo()
@@ -206,81 +121,8 @@ function Header() {
         setServerPushSupported(false)
         setPushSupportReason(local.reason)
         setPushEnabled(false)
-        setPushDebug({
-          origin: window.location.origin,
-          hasLocalSubscription: false,
-          hasServerSubscription: false,
-          permission:
-            typeof Notification !== 'undefined' ? Notification.permission : 'n/a',
-          lastPushDataUrl: getLastPushDataUrl(),
-        })
       })
   }, [token])
-
-  const handleOpenPushDebug = async () => {
-    if (!token) {
-      return
-    }
-
-    try {
-      const status = await getPushStatus()
-      setPushDebug({
-        origin: window.location.origin,
-        hasLocalSubscription: Boolean(status?.hasLocalSubscription),
-        hasServerSubscription: Boolean(status?.hasServerSubscription),
-        permission:
-          status?.permission ||
-          (typeof Notification !== 'undefined' ? Notification.permission : 'n/a'),
-        lastPushDataUrl: getLastPushDataUrl(),
-      })
-    } catch {
-      setPushDebug({
-        origin: window.location.origin,
-        hasLocalSubscription: false,
-        hasServerSubscription: false,
-        permission:
-          typeof Notification !== 'undefined' ? Notification.permission : 'n/a',
-        lastPushDataUrl: getLastPushDataUrl(),
-      })
-    }
-
-    setPushDebugOpen(true)
-  }
-
-  const buildPushDebugText = () => {
-    return [
-      `Origin: ${pushDebug.origin || '-'}`,
-      `Local subscription: ${pushDebug.hasLocalSubscription ? 'true' : 'false'}`,
-      `Server subscription: ${pushDebug.hasServerSubscription ? 'true' : 'false'}`,
-      `Notification permission: ${pushDebug.permission}`,
-      `Last push data URL: ${pushDebug.lastPushDataUrl}`,
-    ].join('\n')
-  }
-
-  const handleCopyPushDebug = async () => {
-    const debugText = buildPushDebugText()
-
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(debugText)
-      } else {
-        const textarea = document.createElement('textarea')
-        textarea.value = debugText
-        textarea.setAttribute('readonly', '')
-        textarea.style.position = 'fixed'
-        textarea.style.opacity = '0'
-        document.body.appendChild(textarea)
-        textarea.select()
-        document.execCommand('copy')
-        document.body.removeChild(textarea)
-      }
-
-      setPushDebugCopied(true)
-      window.setTimeout(() => setPushDebugCopied(false), 1500)
-    } catch {
-      window.alert('Не удалось скопировать автоматически. Скопируй текст вручную.')
-    }
-  }
 
   const handleTogglePush = async () => {
     if (!token || pushLoading) {
@@ -650,61 +492,9 @@ function Header() {
                   : 'Включить Push'}
                 </Button>
 
-                <Button
-                  variant="text"
-                  size="small"
-                  onClick={handleOpenPushDebug}
-                  sx={{ textTransform: 'none' }}
-                >
-                  Push debug
-                </Button>
-
                 <Button variant="contained" onClick={handleLogout}>
                   Выйти
                 </Button>
-
-                <Dialog
-                  open={pushDebugOpen}
-                  onClose={() => {
-                    setPushDebugOpen(false)
-                    setPushDebugCopied(false)
-                  }}
-                  fullWidth
-                  maxWidth="sm"
-                >
-                  <DialogTitle>Push diagnostics</DialogTitle>
-                  <DialogContent>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      Origin: {pushDebug.origin || '-'}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      Local subscription: {pushDebug.hasLocalSubscription ? 'true' : 'false'}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      Server subscription: {pushDebug.hasServerSubscription ? 'true' : 'false'}
-                    </Typography>
-                    <Typography variant="body2" sx={{ mb: 1 }}>
-                      Notification permission: {pushDebug.permission}
-                    </Typography>
-                    <Typography variant="body2" sx={{ wordBreak: 'break-word' }}>
-                      Last push data URL: {pushDebug.lastPushDataUrl}
-                    </Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 2 }}>
-                      <Button size="small" onClick={handleCopyPushDebug}>
-                        {pushDebugCopied ? 'Скопировано' : 'Скопировать debug'}
-                      </Button>
-                      <Button
-                        size="small"
-                        onClick={() => {
-                          setPushDebugOpen(false)
-                          setPushDebugCopied(false)
-                        }}
-                      >
-                        Закрыть
-                      </Button>
-                    </Box>
-                  </DialogContent>
-                </Dialog>
               </>
             : <>
                 <Button
