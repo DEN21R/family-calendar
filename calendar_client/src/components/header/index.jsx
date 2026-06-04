@@ -123,18 +123,6 @@ function Header() {
     }
   }
 
-  const updatePushDebugInfo = (status) => {
-    setPushDebug({
-      origin: window.location.origin,
-      hasLocalSubscription: Boolean(status?.hasLocalSubscription),
-      hasServerSubscription: Boolean(status?.hasServerSubscription),
-      permission:
-        status?.permission ||
-        (typeof Notification !== 'undefined' ? Notification.permission : 'n/a'),
-      lastPushDataUrl: getLastPushDataUrl(),
-    })
-  }
-
   useEffect(() => {
     saveLastPushDataUrlFromQuery()
   }, [])
@@ -169,7 +157,15 @@ function Header() {
         setServerPushSupported(Boolean(status.serverSupported))
         setPushSupportReason(status.reason || null)
         setPushEnabled(Boolean(status.pushEnabled && status.hasSubscription))
-        updatePushDebugInfo(status)
+        setPushDebug({
+          origin: window.location.origin,
+          hasLocalSubscription: Boolean(status?.hasLocalSubscription),
+          hasServerSubscription: Boolean(status?.hasServerSubscription),
+          permission:
+            status?.permission ||
+            (typeof Notification !== 'undefined' ? Notification.permission : 'n/a'),
+          lastPushDataUrl: getLastPushDataUrl(),
+        })
       })
       .catch(() => {
         const local = getLocalPushSupportInfo()
@@ -177,11 +173,13 @@ function Header() {
         setServerPushSupported(false)
         setPushSupportReason(local.reason)
         setPushEnabled(false)
-        updatePushDebugInfo({
+        setPushDebug({
+          origin: window.location.origin,
           hasLocalSubscription: false,
           hasServerSubscription: false,
           permission:
             typeof Notification !== 'undefined' ? Notification.permission : 'n/a',
+          lastPushDataUrl: getLastPushDataUrl(),
         })
       })
   }, [token])
@@ -193,13 +191,23 @@ function Header() {
 
     try {
       const status = await getPushStatus()
-      updatePushDebugInfo(status)
+      setPushDebug({
+        origin: window.location.origin,
+        hasLocalSubscription: Boolean(status?.hasLocalSubscription),
+        hasServerSubscription: Boolean(status?.hasServerSubscription),
+        permission:
+          status?.permission ||
+          (typeof Notification !== 'undefined' ? Notification.permission : 'n/a'),
+        lastPushDataUrl: getLastPushDataUrl(),
+      })
     } catch {
-      updatePushDebugInfo({
+      setPushDebug({
+        origin: window.location.origin,
         hasLocalSubscription: false,
         hasServerSubscription: false,
         permission:
           typeof Notification !== 'undefined' ? Notification.permission : 'n/a',
+        lastPushDataUrl: getLastPushDataUrl(),
       })
     }
 
