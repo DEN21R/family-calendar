@@ -37,9 +37,13 @@ self.addEventListener('notificationclick', (event) => {
 
   function toAppUrl(base, target) {
     try {
-      const url = new URL(target, base)
-      url.searchParams.set('_pushDataUrl', target)
-      return url.toString()
+      const parsed = new URL(target, base)
+      const safeUrl = new URL(
+        `${parsed.pathname}${parsed.search}${parsed.hash}`,
+        appOrigin,
+      )
+      safeUrl.searchParams.set('_pushDataUrl', target)
+      return safeUrl.toString()
     } catch {
       const fallback = new URL('/calendar', base)
       fallback.searchParams.set('_pushDataUrl', target)
