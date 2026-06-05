@@ -40,6 +40,7 @@ async function processTask(task, now) {
   )
 
   let deliveredCount = 0
+  let emailFailedCount = 0
 
   for (const user of users) {
     let userDelivered = false
@@ -56,6 +57,7 @@ async function processTask(task, now) {
         console.error(
           `Reminder email failed for ${user.email}: ${error.message}`,
         )
+        emailFailedCount += 1
       }
     }
 
@@ -80,6 +82,13 @@ async function processTask(task, now) {
     if (userDelivered) {
       deliveredCount += 1
     }
+  }
+
+  if (emailFailedCount > 0) {
+    console.warn(
+      `Reminder email partially failed for task ${task._id}: ${emailFailedCount} recipient(s) will be retried`,
+    )
+    return false
   }
 
   if (deliveredCount === 0) {
