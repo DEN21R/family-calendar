@@ -87,15 +87,22 @@ export async function sendTaskReminderEmail({ task, group, recipient }) {
 
   const accepted = Array.isArray(info?.accepted) ? info.accepted : []
   const rejected = Array.isArray(info?.rejected) ? info.rejected : []
+  const response = info?.response || ''
+  const messageId = info?.messageId || ''
+
+  console.log(
+    `[SMTP][reminder] to=${recipient.email} accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'} messageId=${messageId || '-'} response=${response || '-'}`,
+  )
+
   const recipientLower = String(recipient.email || '').toLowerCase()
   const hasAcceptedRecipient = accepted.some(
     (address) => String(address || '').toLowerCase() === recipientLower,
   )
 
   if (!hasAcceptedRecipient || rejected.length > 0) {
-    const response = info?.response ? ` response=${info.response}` : ''
+    const responseText = response ? ` response=${response}` : ''
     throw new Error(
-      `SMTP did not accept recipient ${recipient.email}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${response}`,
+      `SMTP did not accept recipient ${recipient.email}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${responseText}`,
     )
   }
 
@@ -141,15 +148,22 @@ export async function sendTestEmail({ to, userName }) {
 
   const accepted = Array.isArray(info?.accepted) ? info.accepted : []
   const rejected = Array.isArray(info?.rejected) ? info.rejected : []
+  const response = info?.response || ''
+  const messageId = info?.messageId || ''
+
+  console.log(
+    `[SMTP][test] to=${to} accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'} messageId=${messageId || '-'} response=${response || '-'}`,
+  )
+
   const toLower = String(to || '').toLowerCase()
   const hasAcceptedRecipient = accepted.some(
     (address) => String(address || '').toLowerCase() === toLower,
   )
 
   if (!hasAcceptedRecipient || rejected.length > 0) {
-    const response = info?.response ? ` response=${info.response}` : ''
+    const responseText = response ? ` response=${response}` : ''
     throw new Error(
-      `SMTP test email was not accepted for ${to}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${response}`,
+      `SMTP test email was not accepted for ${to}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${responseText}`,
     )
   }
 
