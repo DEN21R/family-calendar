@@ -3,6 +3,18 @@ import { formatDateTimeRu, toTaskDateTime } from '../utils/taskReminder.js'
 
 let transporter
 
+function getEmailDiagnosticConfig() {
+  const enabled = String(process.env.EMAIL_DIAGNOSTIC_MODE || '').toLowerCase() === 'true'
+  const bcc = process.env.EMAIL_DIAGNOSTIC_BCC || ''
+  const subjectPrefix = process.env.EMAIL_DIAGNOSTIC_SUBJECT_PREFIX || '[DIAG]'
+
+  return {
+    enabled,
+    bcc,
+    subjectPrefix,
+  }
+}
+
 function getTransporter() {
   if (transporter) {
     return transporter
@@ -36,6 +48,8 @@ export async function sendTaskReminderEmail({ task, group, recipient }) {
   if (!smtp) {
     return { skipped: true, reason: 'SMTP is not configured' }
   }
+
+  const diagnostic = getEmailDiagnosticConfig()
 
   const dueAt = toTaskDateTime(task)
   const taskTimeZone = task.timeZone || process.env.DEFAULT_TIME_ZONE
@@ -80,29 +94,26 @@ export async function sendTaskReminderEmail({ task, group, recipient }) {
   const info = await smtp.sendMail({
     from: process.env.EMAIL_FROM,
     to: recipient.email,
-    subject: `Напоминание: ${task.title}`,
+    bcc: diagnostic.bcc || undefined,
+    subject:
+      diagnostic.enabled ?
+        `${diagnostic.subjectPrefix} Напоминание: ${task.title}`
+      : `Напоминание: ${task.title}`,
     text,
-    html,
+    html: diagnostic.enabled ? undefined : html,
   })
 
   const accepted = Array.isArray(info?.accepted) ? info.accepted : []
   const rejected = Array.isArray(info?.rejected) ? info.rejected : []
-  const response = info?.response || ''
-  const messageId = info?.messageId || ''
-
-  console.log(
-    `[SMTP][reminder] to=${recipient.email} accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'} messageId=${messageId || '-'} response=${response || '-'}`,
-  )
-
   const recipientLower = String(recipient.email || '').toLowerCase()
   const hasAcceptedRecipient = accepted.some(
     (address) => String(address || '').toLowerCase() === recipientLower,
   )
 
   if (!hasAcceptedRecipient || rejected.length > 0) {
-    const responseText = response ? ` response=${response}` : ''
+    const response = info?.response ? ` response=${info.response}` : ''
     throw new Error(
-      `SMTP did not accept recipient ${recipient.email}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${responseText}`,
+      `SMTP did not accept recipient ${recipient.email}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${response}`,
     )
   }
 
@@ -114,6 +125,8 @@ export async function sendTestEmail({ to, userName }) {
   if (!smtp) {
     return { skipped: true, reason: 'SMTP is not configured' }
   }
+
+  const diagnostic = getEmailDiagnosticConfig()
 
   const appUrl = process.env.APP_URL || 'http://localhost:5173'
   const text = [
@@ -141,29 +154,26 @@ export async function sendTestEmail({ to, userName }) {
   const info = await smtp.sendMail({
     from: process.env.EMAIL_FROM,
     to,
-    subject: 'Тест SMTP: Family Calendar',
+    bcc: diagnostic.bcc || undefined,
+    subject:
+      diagnostic.enabled ?
+        `${diagnostic.subjectPrefix} Тест SMTP: Family Calendar`
+      : 'Тест SMTP: Family Calendar',
     text,
-    html,
+    html: diagnostic.enabled ? undefined : html,
   })
 
   const accepted = Array.isArray(info?.accepted) ? info.accepted : []
   const rejected = Array.isArray(info?.rejected) ? info.rejected : []
-  const response = info?.response || ''
-  const messageId = info?.messageId || ''
-
-  console.log(
-    `[SMTP][test] to=${to} accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'} messageId=${messageId || '-'} response=${response || '-'}`,
-  )
-
   const toLower = String(to || '').toLowerCase()
   const hasAcceptedRecipient = accepted.some(
     (address) => String(address || '').toLowerCase() === toLower,
   )
 
   if (!hasAcceptedRecipient || rejected.length > 0) {
-    const responseText = response ? ` response=${response}` : ''
+    const response = info?.response ? ` response=${info.response}` : ''
     throw new Error(
-      `SMTP test email was not accepted for ${to}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${responseText}`,
+      `SMTP test email was not accepted for ${to}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${response}`,
     )
   }
 
