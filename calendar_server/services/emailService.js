@@ -77,13 +77,27 @@ export async function sendTaskReminderEmail({ task, group, recipient }) {
     </div>
   `
 
-  await smtp.sendMail({
+  const info = await smtp.sendMail({
     from: process.env.EMAIL_FROM,
     to: recipient.email,
     subject: `Напоминание: ${task.title}`,
     text,
     html,
   })
+
+  const accepted = Array.isArray(info?.accepted) ? info.accepted : []
+  const rejected = Array.isArray(info?.rejected) ? info.rejected : []
+  const recipientLower = String(recipient.email || '').toLowerCase()
+  const hasAcceptedRecipient = accepted.some(
+    (address) => String(address || '').toLowerCase() === recipientLower,
+  )
+
+  if (!hasAcceptedRecipient || rejected.length > 0) {
+    const response = info?.response ? ` response=${info.response}` : ''
+    throw new Error(
+      `SMTP did not accept recipient ${recipient.email}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${response}`,
+    )
+  }
 
   return { skipped: false }
 }
@@ -117,13 +131,27 @@ export async function sendTestEmail({ to, userName }) {
     </div>
   `
 
-  await smtp.sendMail({
+  const info = await smtp.sendMail({
     from: process.env.EMAIL_FROM,
     to,
     subject: 'Тест SMTP: Family Calendar',
     text,
     html,
   })
+
+  const accepted = Array.isArray(info?.accepted) ? info.accepted : []
+  const rejected = Array.isArray(info?.rejected) ? info.rejected : []
+  const toLower = String(to || '').toLowerCase()
+  const hasAcceptedRecipient = accepted.some(
+    (address) => String(address || '').toLowerCase() === toLower,
+  )
+
+  if (!hasAcceptedRecipient || rejected.length > 0) {
+    const response = info?.response ? ` response=${info.response}` : ''
+    throw new Error(
+      `SMTP test email was not accepted for ${to}; accepted=${accepted.join(',') || '-'} rejected=${rejected.join(',') || '-'}${response}`,
+    )
+  }
 
   return { skipped: false }
 }
