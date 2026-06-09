@@ -1,6 +1,7 @@
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import timeGridPlugin from '@fullcalendar/timegrid'
 import ruLocale from '@fullcalendar/core/locales/ru'
 import { useSelector } from 'react-redux'
 import { Box, Typography, Button, Avatar } from '@mui/material'
@@ -44,6 +45,7 @@ export function Calendar() {
   const [selectedDate, setSelectedDate] = useState('')
   const [editingTask, setEditingTask] = useState(null)
   const [submitting, setSubmitting] = useState(false)
+  const [calendarView, setCalendarView] = useState('dayGridMonth')
 
   const events = useMemo(
     () => (activeGroupId ? tasks : []),
@@ -183,26 +185,57 @@ export function Calendar() {
             {activeGroupName ? `Группа: ${activeGroupName}` : 'Мой календарь'}
           </Typography>
         </Box>
-        {activeGroupId && (
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 1,
+            flexWrap: 'wrap',
+            width: '100%',
+          }}
+        >
+          {activeGroupId && (
+            <Button
+              variant="outlined"
+              onClick={() => navigate(`/groups/${activeGroupId}/settings`)}
+              sx={{
+                borderColor: '#20419c',
+                color: '#20419c',
+                fontWeight: 600,
+                textTransform: 'none',
+                '&:hover': { borderColor: '#17327c', color: '#17327c' },
+              }}
+            >
+              Настройки группы
+            </Button>
+          )}
+
           <Button
-            variant="outlined"
-            onClick={() => navigate(`/groups/${activeGroupId}/settings`)}
+            variant={calendarView === 'dayGridMonth' ? 'contained' : 'outlined'}
+            onClick={() => setCalendarView('dayGridMonth')}
             sx={{
-              borderColor: '#20419c',
-              color: '#20419c',
-              fontWeight: 600,
               textTransform: 'none',
-              '&:hover': { borderColor: '#17327c', color: '#17327c' },
+              fontWeight: 600,
             }}
           >
-            Настройки группы
+            Месяц
           </Button>
-        )}
+          <Button
+            variant={calendarView === 'timeGridWeek' ? 'contained' : 'outlined'}
+            onClick={() => setCalendarView('timeGridWeek')}
+            sx={{
+              textTransform: 'none',
+              fontWeight: 600,
+            }}
+          >
+            Неделя
+          </Button>
+        </Box>
       </Box>
       <Box className={styles.wrapper}>
         <FullCalendar
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView="dayGridMonth"
+          key={calendarView}
+          plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
+          initialView={calendarView}
           weekends={true}
           events={events}
           eventContent={renderEventContent}
